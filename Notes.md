@@ -13,6 +13,9 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
 | [Day 3](#day-3) | HTML basics | Document structure, tags, text, lists, links, images |
 | [Day 4](#day-4) | HTML layout and media | Semantic tags, div/span, tables, audio/video, paths |
 | [Day 5](#day-5) | HTML forms | Inputs, labels, validation attributes, a11y, cheat sheet |
+| [Day 6](#day-6) | CSS basics | Syntax, how to attach CSS, selectors, colors, fonts, cascade |
+| [Day 7](#day-7) | CSS box model | Box model, display, spacing, backgrounds, positioning |
+| [Day 8](#day-8) | CSS layout | Flexbox, grid, responsive, states, variables, cheat sheet |
 
 - [Day 1 — Tech overview](#day-1)
   - [HTML](#html)
@@ -63,11 +66,37 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
   - [How HTML connects to CSS and JS](#how-html-connects-to-css-and-js)
   - [Cheat sheet](#cheat-sheet-1)
   - [Day 5 recap](#day-5-recap)
+- [Day 6 — CSS basics](#day-6)
+  - [What CSS is](#what-css-is)
+  - [How to add CSS](#how-to-add-css)
+  - [Rules and syntax](#rules-and-syntax)
+  - [Selectors](#selectors)
+  - [Colors and fonts](#colors-and-fonts)
+  - [Units](#units)
+  - [Cascade, specificity, inheritance](#cascade-specificity-inheritance)
+  - [Day 6 recap](#day-6-recap)
+- [Day 7 — CSS box model](#day-7)
+  - [The box model](#the-box-model)
+  - [Display](#display)
+  - [Backgrounds and borders](#backgrounds-and-borders)
+  - [Spacing and sizing](#spacing-and-sizing)
+  - [Positioning](#positioning)
+  - [Day 7 recap](#day-7-recap)
+- [Day 8 — CSS layout](#day-8)
+  - [Flexbox](#flexbox)
+  - [Grid](#grid)
+  - [Responsive design](#responsive-design)
+  - [Pseudo-classes and states](#pseudo-classes-and-states)
+  - [Variables and transitions](#variables-and-transitions)
+  - [How CSS connects to HTML and React](#how-css-connects-to-html-and-react)
+  - [Cheat sheet](#cheat-sheet-2)
+  - [Day 8 recap](#day-8-recap)
 
 ---
 
 ## Day 1
 
+**Recording:** [Day 1 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%201.mov)  
 **Topic:** What is each technology?  
 **Goal:** Students can name the stack pieces and say what each one is for. No deep commands today.
 
@@ -106,7 +135,7 @@ It is not a programming language. It is tags that describe content. Full lessons
 
 **Cascading Style Sheets** — how the page looks (colors, fonts, layout, spacing).
 
-HTML is the skeleton. CSS is the design.
+HTML is the skeleton. CSS is the design. Full lessons are [Day 6](#day-6), [Day 7](#day-7), and [Day 8](#day-8).
 
 ```css
 h1 {
@@ -256,6 +285,7 @@ This is how you find why a button does nothing or an API call failed.
 
 ## Day 2
 
+**Recording:** [Day 2 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%202.mov)  
 **Topic:** Git  
 **Goal:** Students can use a repo, stage and commit, branch, pull/push, merge, and undo local work.
 
@@ -742,6 +772,7 @@ git merge main          # or: git rebase main
 
 ## Day 3
 
+**Recording:** [Day 3 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%203.mov)  
 **Topic:** HTML basics  
 **Goal:** Students can write a complete HTML page with headings, text, lists, links, and images.
 
@@ -1053,6 +1084,7 @@ Practice: one `index.html` for a school homepage — title, heading, welcome par
 
 ## Day 4
 
+**Recording:** [Day 4 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%204.mov)  
 **Topic:** HTML layout and media  
 **Goal:** Students can structure a page with semantic tags, build a table, and embed images, audio, video, and maps.
 
@@ -1336,6 +1368,7 @@ Practice: a `timetable.html` with header/nav/main/footer, a real table, one camp
 
 ## Day 5
 
+**Recording:** [Day 5 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%205.mov)  
 **Topic:** HTML forms  
 **Goal:** Students can build a working form with labels, the right input types, and basic validation — ready to hook to JavaScript or a Node API later.
 
@@ -1568,7 +1601,7 @@ Later:
 - **React** still produces HTML. The same tags and accessibility rules apply
 - **Node** receives `name`/`value` pairs from the form (or JSON from JavaScript)
 
-If the HTML structure is messy, CSS and JS become messy. Clean tags first.
+If the HTML structure is messy, CSS and JS become messy. Clean tags first. CSS in depth is [Day 6](#day-6), [Day 7](#day-7), and [Day 8](#day-8).
 
 ### Cheat sheet
 
@@ -1607,5 +1640,755 @@ Browser checks (`required`, `type="email"`) help users. The API still must valid
 HTML across Days 3–5 is the **structure** of every web screen you will build in this course — including React screens, which compile down to these same tags.
 
 Practice: a `register.html` student form — name, email, password, section dropdown, bus radio, terms checkbox, submit. Open it in Chrome, Inspect the elements, submit and watch the Network tab (or a `console.log` of `FormData`).
+
+[Back to index](#index)
+
+---
+
+## Day 6
+
+**Topic:** CSS basics  
+**Goal:** Students can attach a stylesheet, write selectors, and style text and colors — and explain why one rule wins over another.
+
+Quick reference for CSS: what it is, how it connects to HTML, and the rules you will write every day.
+
+### What CSS is
+
+**CSS** = Cascading Style Sheets.
+
+HTML says *what* is on the page. CSS says *how it looks*.
+
+```text
+HTML  →  structure (heading, form, table)
+CSS   →  look (navy heading, padded card, two columns)
+JS    →  behaviour (clicks, submit, APIs)
+```
+
+CSS cannot add a heading that is not in the HTML. It can only style elements that already exist (or generate tiny extras with `::before` / `::after` on Day 8).
+
+A **stylesheet** is a list of rules. The browser applies them when it paints the page.
+
+### How to add CSS
+
+Three ways. Use **external** CSS for real projects.
+
+```html
+<!-- 1. External (best) — in <head> -->
+<link rel="stylesheet" href="css/styles.css">
+
+<!-- 2. Internal — in <head>, one page only -->
+<style>
+  h1 { color: navy; }
+</style>
+```
+
+```html
+<!-- 3. Inline — on one element. Avoid for real layouts. -->
+<h1 style="color: navy;">School Portal</h1>
+```
+
+| Method | Where | Use |
+| --- | --- | --- |
+| External | `.css` file + `<link>` | Whole site. One file, many pages |
+| Internal | `<style>` in `<head>` | Quick demo on a single HTML file |
+| Inline | `style=""` on a tag | Tiny one-off override — not for a whole page |
+
+Same folder idea as HTML [file paths](#file-paths):
+
+```text
+project/
+  index.html
+  css/
+    styles.css
+```
+
+From `index.html`: `href="css/styles.css"`.
+
+Put `<link>` in `<head>` so styles load before the body paints. You can add more than one stylesheet; later files can override earlier ones (see cascade below).
+
+### Rules and syntax
+
+```css
+/* selector { property: value; } */
+h1 {
+  color: navy;
+  font-size: 32px;
+}
+```
+
+| Piece | Example | Meaning |
+| --- | --- | --- |
+| Selector | `h1` | Which elements |
+| Declaration | `color: navy;` | One style |
+| Property | `color` | What to change |
+| Value | `navy` | The setting |
+| Block | `{ ... }` | All declarations for that selector |
+
+Rules:
+
+- End each declaration with `;`
+- Quotes around font names with spaces: `"Segoe UI"`
+- Comments are `/* like this */` — not `<!-- -->`
+- CSS is not HTML. Do not put tags inside the `.css` file
+
+Invalid CSS is ignored. One broken line does not always kill the whole file, but a missing `}` can.
+
+### Selectors
+
+Selectors pick HTML. Match them to `class` and `id` from [Day 3](#comments-and-common-attributes).
+
+```html
+<h1>School Portal</h1>
+<p class="alert" id="notices">Fees due Friday.</p>
+<p class="alert muted">Optional notice.</p>
+```
+
+```css
+h1 { }                 /* all <h1> elements */
+.alert { }             /* class="alert" */
+#notices { }           /* id="notices" — one per page */
+.alert.muted { }       /* both classes on the same element */
+p.alert { }            /* <p> that also has class alert */
+
+header nav a { }       /* descendant: <a> anywhere inside header nav */
+header > h1 { }        /* child: <h1> directly inside <header> */
+h1, h2, h3 { }         /* grouping: same styles on several selectors */
+```
+
+| Selector | Matches | CSS prefix |
+| --- | --- | --- |
+| Element | Every tag of that name | `p` |
+| Class | Every element with that class | `.alert` |
+| ID | The one element with that id | `#notices` |
+| Group | All listed selectors | `h1, h2` |
+| Descendant | Nested anywhere inside | `nav a` |
+| Child | One level down only | `nav > a` |
+
+Prefer **classes** for styling. Use **ids** for unique page hooks (skip links, JavaScript). Do not style by long HTML paths (`body div div p span`) — a class is clearer and survives layout changes.
+
+### Colors and fonts
+
+```css
+h1 {
+  color: navy;                 /* text */
+  background-color: #f4f7fb;   /* behind the text */
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+```
+
+Colors you will use:
+
+| Form | Example | Notes |
+| --- | --- | --- |
+| Name | `navy`, `white` | Fine for teaching; limited set |
+| Hex | `#1e3a5f` | Most common in real CSS |
+| RGB | `rgb(30, 58, 95)` | Same idea as hex |
+| RGBA | `rgba(0, 0, 0, 0.4)` | Last number is opacity 0–1 |
+
+Fonts:
+
+- `font-family` is a **stack**: first available font wins, then the next
+- Always end with a generic: `sans-serif`, `serif`, or `monospace`
+- `font-size` for size, `font-weight` for bold (`400` normal, `700` bold)
+- `line-height` around `1.5` for body text — easier to read
+- `text-align`: `left` \| `center` \| `right` \| `justify`
+- Links default to underline and blue. Style `a` and `a:hover` together (hover is Day 8)
+
+Load a web font later with Google Fonts or `@font-face`. For class, system fonts are enough.
+
+### Units
+
+| Unit | Meaning | Typical use |
+| --- | --- | --- |
+| `px` | Pixels | Borders, small tweaks |
+| `%` | Percent of the **parent** | Widths: `width: 50%` |
+| `em` | Relative to **this element's** font-size | Padding that scales with text |
+| `rem` | Relative to the **root** (`html`) font-size | Font sizes, spacing on a whole site |
+| `vh` / `vw` | 1% of the viewport height / width | Full-screen hero: `min-height: 100vh` |
+
+```css
+html { font-size: 16px; }   /* 1rem = 16px unless the user zooms */
+
+h1 { font-size: 2rem; }     /* 32px at default root */
+p  { font-size: 1rem; }
+.card { width: 90%; max-width: 40rem; }
+```
+
+Prefer `rem` for type and spacing so the page scales if the user changes browser font size. Use `%` or `max-width` so layouts do not overflow on phones. `px` is fine for a 1px border.
+
+### Cascade, specificity, inheritance
+
+**Cascade** = when several rules match, the browser picks a winner.
+
+Order of power (low → high):
+
+1. Browser default styles
+2. Your stylesheet (later rule beats earlier rule **if** specificity is equal)
+3. Inline `style=""`
+4. `!important` (avoid — it fights you later)
+
+**Specificity** (who is more precise):
+
+```text
+element     <  class / pseudo-class  <  id  <  inline style
+  p                .alert                 #notices
+```
+
+```css
+p { color: black; }           /* loses */
+.alert { color: #7a5b00; }    /* wins over p */
+#notices { color: #5c3d00; }  /* wins over .alert */
+```
+
+Tied specificity → the **last** rule in the file wins.
+
+**Inheritance:** some properties pass to children (`color`, `font-family`, `line-height`). Box properties do **not** (`margin`, `padding`, `border`, `width`).
+
+```css
+body {
+  font-family: system-ui, sans-serif;  /* children inherit this */
+  color: #222;
+}
+```
+
+That is why you set fonts on `body` once, not on every tag.
+
+Inspect in Chrome: right-click → Inspect → **Styles**. Crossed-out declarations lost the cascade. Use this when “my CSS is not working”.
+
+### Day 6 recap
+
+| Idea | In one line |
+| --- | --- |
+| External CSS | `<link rel="stylesheet" href="css/styles.css">` |
+| Rule | `selector { property: value; }` |
+| Class / id | `.alert` / `#notices` |
+| Group | `h1, h2 { }` |
+| Descendant | `nav a` |
+| `rem` | Size relative to root font |
+| Specificity | element < class < id |
+| Inherit | fonts and color; not margin/padding |
+
+Practice: `index.html` + `css/styles.css`. Style the school homepage heading, body font, a `.alert` notice, and nav links. Change one rule and watch it update. If nothing changes, check the path and the Styles panel.
+
+[Back to index](#index)
+
+---
+
+## Day 7
+
+**Topic:** CSS box model  
+**Goal:** Students can size and space elements with padding, border, and margin, control `display`, and place a header or badge with positioning.
+
+### The box model
+
+Every element is a **box**:
+
+```text
+margin        (outside, transparent — pushes neighbours away)
+  border
+    padding   (inside, around the content)
+      content (text, image, or child boxes)
+```
+
+```css
+.card {
+  box-sizing: border-box;   /* width includes padding + border */
+  width: 320px;
+  padding: 16px;
+  border: 1px solid #d0d7de;
+  margin: 16px auto;        /* top/bottom 16px; left/right centered */
+}
+```
+
+| Part | What it does |
+| --- | --- |
+| `content` | The text or children |
+| `padding` | Space inside the border |
+| `border` | Line around the padding |
+| `margin` | Space outside the border |
+
+**`box-sizing: border-box`** — put this on everything at the start of the file. Then `width: 320px` is the visible width, not “content plus mystery padding”.
+
+```css
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+```
+
+Shorthand order is **top, right, bottom, left** (clock):
+
+```css
+margin: 8px 16px 24px 32px;
+padding: 12px;          /* all four sides */
+padding: 12px 20px;     /* top/bottom | left/right */
+```
+
+**Margin collapse:** vertical margins of siblings can combine into one (the larger one). Padding does not collapse. If two cards stick together oddly, inspect margin — that is often why.
+
+`margin: auto` on left and right centers a **block** that has a width.
+
+### Display
+
+`display` changes how the box participates in layout.
+
+| Value | Behaviour |
+| --- | --- |
+| `block` | New line, full width (`h1`, `p`, `div`) |
+| `inline` | Sits in the text (`a`, `strong`, `span`). **width / height / vertical margin ignored** |
+| `inline-block` | Sits in a line, but width/height/padding work |
+| `none` | Removed from layout (not visible, no gap) |
+| `flex` | Children laid out on an axis (Day 8) |
+| `grid` | Children on rows and columns (Day 8) |
+
+```css
+.badge { display: inline-block; padding: 4px 8px; }
+.hidden { display: none; }
+nav a { display: inline-block; padding: 8px 12px; }
+```
+
+`visibility: hidden` hides the element but **keeps the gap**. `display: none` removes it.
+
+This is the same block vs inline idea from [Day 3](#block-vs-inline), now under your control.
+
+### Backgrounds and borders
+
+```css
+.hero {
+  background-color: #1e3a5f;
+  background-image: url("../images/campus.jpg");
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+.card {
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;       /* removes the extra gap under images */
+}
+```
+
+| Property | Job |
+| --- | --- |
+| `background-color` | Fill |
+| `background-image` | Photo or pattern (`url(...)`) |
+| `background-size` | `cover` fills the box (may crop); `contain` shows all |
+| `border` | `width style color` — styles: `solid` `dashed` `none` |
+| `border-radius` | Rounded corners (`50%` on a square → circle) |
+| `box-shadow` | Soft depth. Do not fake a whole layout with shadows |
+
+`max-width: 100%` on images stops them bursting out of the card.
+
+### Spacing and sizing
+
+```css
+.wrap {
+  width: 90%;
+  max-width: 960px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.notice {
+  overflow: auto;        /* scroll if content is taller than the box */
+}
+```
+
+| Property | Job |
+| --- | --- |
+| `width` / `height` | Size of the box (with `border-box`, this is the visible size) |
+| `max-width` | Cap on large screens (`960px` is a common reading width) |
+| `min-height` | At least this tall (footer at the bottom of a short page) |
+| `overflow` | `visible` (default), `hidden` (clip), `auto` (scroll if needed) |
+
+Do not set a fixed `height` on text containers unless you must — text will overflow when the student translates the page or zooms.
+
+Space **between** cards with `margin` or, better on Day 8, `gap` on a flex/grid parent. Space **inside** a card with `padding`.
+
+Style lists and links while you are here:
+
+```css
+ul { list-style: disc; padding-left: 1.25rem; }
+a { color: #1e3a5f; text-decoration: none; }
+a:focus { outline: 2px solid gold; outline-offset: 2px; }
+```
+
+Keep a visible **focus** outline for keyboard users ([Day 5 accessibility](#accessibility)).
+
+### Positioning
+
+`position` changes how the box is placed relative to the normal flow.
+
+| Value | Meaning |
+| --- | --- |
+| `static` | Default. `top` / `left` do nothing |
+| `relative` | Stay in flow; `top`/`left` nudge it. Also becomes the **anchor** for absolute children |
+| `absolute` | Out of flow. Placed against the nearest positioned ancestor (or the page) |
+| `fixed` | Out of flow. Stuck to the **viewport** (always-on nav) |
+| `sticky` | In flow until you scroll past `top`, then it sticks |
+
+```css
+header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+}
+
+.card {
+  position: relative;
+}
+
+.card .badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+```
+
+`top` `right` `bottom` `left` only work when `position` is not `static`.
+
+**`z-index`** stacks overlapping boxes. Higher number is on top. It only applies to positioned elements (and flex/grid items). Use small numbers (`1`, `10`, `100`) — not `999999`.
+
+Normal page layout should still be **flow** (block, flex, grid). Positioning is for badges, sticky headers, and overlays — not for building the whole timetable.
+
+### Day 7 recap
+
+| Idea | In one line |
+| --- | --- |
+| Box | content + padding + border + margin |
+| `border-box` | Width includes padding and border |
+| `display: none` | Hide and remove from layout |
+| `padding` vs `margin` | Inside vs outside the border |
+| `max-width` + `margin: 0 auto` | Centered page column |
+| `position: relative` | Anchor for `absolute` children |
+| `sticky` | Header that follows you down the page |
+| `z-index` | Who sits on top |
+
+Practice: turn the school homepage into cards — padding, border, radius, shadow. Center a `.wrap` at `max-width: 960px`. Put a sticky header and an “New” badge on one notice.
+
+[Back to index](#index)
+
+---
+
+## Day 8
+
+**Topic:** CSS layout  
+**Goal:** Students can build a nav and a two-column page with flexbox, a simple grid, a mobile breakpoint, and hover/focus states.
+
+### Flexbox
+
+Set `display: flex` on a **parent**. Children become flex items on one axis.
+
+```css
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between; /* main axis */
+  align-items: center;            /* cross axis */
+}
+
+.row .grow { flex: 1; }           /* take leftover space */
+```
+
+Default **main axis** is horizontal (`flex-direction: row`). Column is vertical:
+
+```css
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+```
+
+| Property (on parent) | Job |
+| --- | --- |
+| `flex-direction` | `row` (default) or `column` |
+| `justify-content` | Along the main axis: `flex-start` `center` `space-between` `space-around` |
+| `align-items` | On the cross axis: `stretch` (default) `center` `flex-start` |
+| `flex-wrap` | `nowrap` (default) or `wrap` so items drop to the next line |
+| `gap` | Space **between** items (better than margin on each child) |
+
+| Property (on child) | Job |
+| --- | --- |
+| `flex: 1` | Grow to fill leftover space |
+| `flex: 0 0 200px` | Do not grow/shrink; stay 200px |
+| `align-self` | Override `align-items` for one item |
+
+Mental model:
+
+```text
+justify-content  →  along the row (or column, if direction is column)
+align-items      →  the other way (cross axis)
+```
+
+Use flex for nav bars, toolbars, a sidebar + content row, and lists of cards that wrap.
+
+### Grid
+
+Grid is rows **and** columns at once. Stronger than flex when you need a 2D page (dashboard, photo gallery, form layout).
+
+```css
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;  /* sidebar | fluid main */
+  gap: 24px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+```
+
+| Property | Job |
+| --- | --- |
+| `grid-template-columns` | Column tracks. `1fr` = one share of leftover space |
+| `grid-template-rows` | Row tracks (often skip this and let content define height) |
+| `gap` | Space between tracks |
+| `repeat(3, 1fr)` | Three equal columns |
+| `minmax(0, 1fr)` | Equal columns that can shrink (avoids overflow) |
+
+Place one item:
+
+```css
+.layout header { grid-column: 1 / -1; }  /* span all columns */
+```
+
+Start with **flex** for one-dimensional UI (nav, a row of buttons). Use **grid** when you can sketch the page as boxes on graph paper.
+
+A common page:
+
+```text
+header  (full width)
+nav     |  main
+        |  aside
+footer  (full width)
+```
+
+That is a grid. The nav inside the header can still be flex.
+
+### Responsive design
+
+**Responsive** = the same HTML, different CSS at different widths. Phones do not get a second website.
+
+The viewport meta from [Day 3](#head-title-and-meta) is required or media queries will not match real phone widths.
+
+```css
+.cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 700px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+```
+
+| Idea | Practice |
+| --- | --- |
+| Mobile first | Default CSS is the small screen; `min-width` adds columns as space grows |
+| Breakpoint | The width where the layout changes (`700px`, `1000px` — pick what the design needs) |
+| Fluid images | `max-width: 100%` |
+| Readable line | `max-width` on text (~60–75 characters) |
+
+**Do not** use a fixed page width of `1200px` with a horizontal scrollbar on phones.
+
+Chrome DevTools: toggle the device toolbar (`Ctrl+Shift+M` / `Cmd+Shift+M`) and drag the width. Watch the grid go from 1 → 2 → 3 columns.
+
+### Pseudo-classes and states
+
+A **pseudo-class** styles an element in a state or a position.
+
+```css
+a:hover { text-decoration: underline; }
+a:visited { color: #5a3d7a; }
+button:focus { outline: 2px solid gold; outline-offset: 2px; }
+button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+input:invalid { border-color: crimson; }
+input:valid { border-color: seagreen; }
+
+.cards article:nth-child(odd) { background: #f7f9fc; }
+.alert:first-child { margin-top: 0; }
+```
+
+| Selector | When it applies |
+| --- | --- |
+| `:hover` | Pointer is over the element |
+| `:focus` | Keyboard or click focused it |
+| `:active` | Being pressed |
+| `:visited` | Link the user has opened (limited properties for privacy) |
+| `:disabled` / `:invalid` / `:valid` | Form control state |
+| `:first-child` / `:last-child` | Position among siblings |
+| `:nth-child(odd)` | 1st, 3rd, 5th… |
+
+Style **hover and focus together** so keyboard users get the same cue:
+
+```css
+a:hover,
+a:focus {
+  color: #0b1f33;
+}
+```
+
+**Pseudo-elements** (optional extra boxes):
+
+```css
+.alert::before {
+  content: "Notice: ";
+  font-weight: 700;
+}
+```
+
+`content` is required for `::before` / `::after` to show. Do not put important text only in `content` — screen readers and selectors vary. Prefer real HTML for real copy.
+
+### Variables and transitions
+
+**Custom properties** (variables) live on `:root` and keep a design consistent.
+
+```css
+:root {
+  --color-brand: #1e3a5f;
+  --color-bg: #f4f7fb;
+  --space: 16px;
+  --radius: 8px;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-brand);
+}
+
+.card {
+  border-radius: var(--radius);
+  padding: var(--space);
+}
+```
+
+Change `--color-brand` once; every `var(--color-brand)` updates.
+
+**Transitions** smooth a change. Animate color and shadow, not huge layout jumps.
+
+```css
+a {
+  color: var(--color-brand);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+a:hover {
+  color: #0b1f33;
+}
+```
+
+| Property | Job |
+| --- | --- |
+| `transition` | What to animate, how long, easing |
+| `transform` | `translate` / `scale` — cheap to animate |
+| `opacity` | Fade |
+
+Avoid transitioning `width`/`height`/`top` on big areas (janky). Prefer `transform` and `opacity`.
+
+Media query for users who asked for less motion:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none;
+  }
+}
+```
+
+### How CSS connects to HTML and React
+
+HTML still needs the hooks:
+
+```html
+<link rel="stylesheet" href="css/styles.css">
+<article class="card">...</article>
+```
+
+```css
+.card { padding: var(--space); }
+```
+
+Later in **React**, the same idea is `className`, not `class`:
+
+```jsx
+<article className="card">...</article>
+```
+
+You can keep a global `styles.css`, or use CSS Modules / styled-components later. The properties you learned (`display`, `flex`, `gap`, `color`) do not change.
+
+DevTools workflow (every bug):
+
+1. Inspect the element
+2. See which rules apply and which are crossed out
+3. Toggle properties live
+4. Copy the winner back into `styles.css`
+
+### Cheat sheet
+
+| Goal | CSS |
+| --- | --- |
+| Attach file | `<link rel="stylesheet" href="css/styles.css">` |
+| Element | `h1 { }` |
+| Class / id | `.card { }` / `#notices { }` |
+| Nested | `nav a { }` |
+| Font + color | `font-family`, `font-size`, `color` |
+| Root size | `rem` |
+| Include padding in width | `box-sizing: border-box` |
+| Inside / outside space | `padding` / `margin` |
+| Center a column | `max-width: 960px; margin: 0 auto;` |
+| Round + shadow | `border-radius` + `box-shadow` |
+| Hide | `display: none` |
+| Sticky header | `position: sticky; top: 0;` |
+| Row of items | `display: flex; gap: 16px;` |
+| Push leftover space | `flex: 1` |
+| Equal columns | `display: grid; grid-template-columns: 1fr 1fr;` |
+| From 1 to 3 columns | `@media (min-width: 700px) { ... }` |
+| Hover / focus | `:hover`, `:focus` |
+| Theme token | `:root { --color-brand: #1e3a5f; }` |
+| Smooth color | `transition: color 0.15s ease;` |
+
+### Day 8 recap
+
+Flex is one axis. Grid is rows and columns. Media queries change those layouts by width. Variables keep the school brand in one place.
+
+CSS across Days 6–8 is the **look** of every web screen in this course. React will still emit HTML + classes; these same rules apply.
+
+Practice: style the student register page — flex nav, a centered form card, `:focus` on inputs, a two-column layout from `700px` up, and brand colors as CSS variables. Resize the browser and confirm it does not overflow.
 
 [Back to index](#index)
