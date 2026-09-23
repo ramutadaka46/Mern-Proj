@@ -96,7 +96,6 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
 
 ## Day 1
 
-**Recording:** [Day 1 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%201.mov)  
 **Topic:** What is each technology?  
 **Goal:** Students can name the stack pieces and say what each one is for. No deep commands today.
 
@@ -285,7 +284,7 @@ This is how you find why a button does nothing or an API call failed.
 
 ## Day 2
 
-**Recording:** [Day 2 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%202.mov)  
+**Recording:** [Day 2 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%202.mp4)  
 **Topic:** Git  
 **Goal:** Students can use a repo, stage and commit, branch, pull/push, merge, and undo local work.
 
@@ -772,7 +771,7 @@ git merge main          # or: git rebase main
 
 ## Day 3
 
-**Recording:** [Day 3 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%203.mov)  
+**Recording:** [Day 3 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%203.mp4)  
 **Topic:** HTML basics  
 **Goal:** Students can write a complete HTML page with headings, text, lists, links, and images.
 
@@ -1084,7 +1083,7 @@ Practice: one `index.html` for a school homepage — title, heading, welcome par
 
 ## Day 4
 
-**Recording:** [Day 4 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%204.mov)  
+**Recording:** [Day 4 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%204.mp4)  
 **Topic:** HTML layout and media  
 **Goal:** Students can structure a page with semantic tags, build a table, and embed images, audio, video, and maps.
 
@@ -1368,7 +1367,6 @@ Practice: a `timetable.html` with header/nav/main/footer, a real table, one camp
 
 ## Day 5
 
-**Recording:** [Day 5 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%205.mov)  
 **Topic:** HTML forms  
 **Goal:** Students can build a working form with labels, the right input types, and basic validation — ready to hook to JavaScript or a Node API later.
 
@@ -1647,6 +1645,7 @@ Practice: a `register.html` student form — name, email, password, section drop
 
 ## Day 6
 
+**Recording:** [Day 6 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%206.mp4)  
 **Topic:** CSS basics  
 **Goal:** Students can attach a stylesheet, write selectors, and style text and colors — and explain why one rule wins over another.
 
@@ -1882,6 +1881,7 @@ Practice: `index.html` + `css/styles.css`. Style the school homepage heading, bo
 
 ## Day 7
 
+**Recording:** [Day 7 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%207.mp4)  
 **Topic:** CSS box model  
 **Goal:** Students can size and space elements with padding, border, and margin, control `display`, and place a header or badge with positioning.
 
