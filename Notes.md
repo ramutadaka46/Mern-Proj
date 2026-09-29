@@ -16,6 +16,12 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
 | [Day 6](#day-6) | CSS basics | Syntax, how to attach CSS, selectors, colors, fonts, cascade |
 | [Day 7](#day-7) | CSS box model | Box model, display, spacing, backgrounds, positioning |
 | [Day 8](#day-8) | CSS layout | Flexbox, grid, responsive, states, variables, cheat sheet |
+| [Day 9](#day-9) | JS basics | Scripts, values, types, variables, operators, console |
+| [Day 10](#day-10) | JS decisions and loops | Comparisons, if/else, loops, arrays as lists |
+| [Day 11](#day-11) | JS functions and data | Functions, scope, objects, array methods |
+| [Day 12](#day-12) | JS DOM | Select, change, create elements, click events |
+| [Day 13](#day-13) | JS forms and storage | Submit, other events, localStorage, UI patterns |
+| [Day 14](#day-14) | JS async and fetch | Promises, async/await, fetch, JSON, cheat sheet |
 
 - [Day 1 — Tech overview](#day-1)
   - [HTML](#html)
@@ -91,6 +97,46 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
   - [How CSS connects to HTML and React](#how-css-connects-to-html-and-react)
   - [Cheat sheet](#cheat-sheet-2)
   - [Day 8 recap](#day-8-recap)
+- [Day 9 — JS basics](#day-9)
+  - [What JavaScript is](#what-javascript-is)
+  - [How to add JavaScript](#how-to-add-javascript)
+  - [Values and types](#values-and-types)
+  - [Variables](#variables)
+  - [Operators and strings](#operators-and-strings)
+  - [Console and errors](#console-and-errors)
+  - [Day 9 recap](#day-9-recap)
+- [Day 10 — JS decisions and loops](#day-10)
+  - [Comparisons and logic](#comparisons-and-logic)
+  - [if and else](#if-and-else)
+  - [Loops](#loops)
+  - [Arrays as lists](#arrays-as-lists)
+  - [Day 10 recap](#day-10-recap)
+- [Day 11 — JS functions and data](#day-11)
+  - [Functions](#functions)
+  - [Scope](#scope)
+  - [Objects](#objects)
+  - [Array methods](#array-methods)
+  - [Day 11 recap](#day-11-recap)
+- [Day 12 — JS DOM](#day-12)
+  - [The DOM](#the-dom)
+  - [Selecting elements](#selecting-elements)
+  - [Changing the page](#changing-the-page)
+  - [Creating elements](#creating-elements)
+  - [Click events](#click-events)
+  - [Day 12 recap](#day-12-recap)
+- [Day 13 — JS forms and storage](#day-13)
+  - [Form events](#form-events)
+  - [Other events](#other-events)
+  - [localStorage](#localstorage)
+  - [Small UI patterns](#small-ui-patterns)
+  - [Day 13 recap](#day-13-recap)
+- [Day 14 — JS async and fetch](#day-14)
+  - [Sync vs async](#sync-vs-async)
+  - [Promises and async/await](#promises-and-asyncawait)
+  - [fetch and JSON](#fetch-and-json)
+  - [How JS connects to React and Node](#how-js-connects-to-react-and-node)
+  - [JS cheat sheet](#js-cheat-sheet)
+  - [Day 14 recap](#day-14-recap)
 
 ---
 
@@ -2392,3 +2438,1347 @@ CSS across Days 6–8 is the **look** of every web screen in this course. React 
 Practice: style the student register page — flex nav, a centered form card, `:focus` on inputs, a two-column layout from `700px` up, and brand colors as CSS variables. Resize the browser and confirm it does not overflow.
 
 [Back to index](#index)
+
+---
+
+## Day 9
+
+**Topic:** JavaScript basics  
+**Goal:** Students can attach a script, declare `let`/`const`, work with strings, numbers, and booleans, and read errors in the console.
+
+Quick reference for JavaScript: what it is, how it connects to HTML, and the values you will use every day.
+
+### What JavaScript is
+
+**JavaScript** (JS) is the programming language of the browser. HTML is structure. CSS is look. JS is **behaviour**.
+
+```text
+HTML  →  the login button exists
+CSS   →  the button looks navy
+JS    →  the button does something when clicked
+```
+
+JS can:
+
+- react to clicks, typing, and form submit
+- change text, classes, and HTML on the page
+- remember values (variables, later `localStorage`)
+- talk to a server (later `fetch` → Node API)
+
+It **is** a programming language: variables, if/else, loops, functions. Full lessons are Days 9–14. React and Node are still JavaScript.
+
+Run JS in two places in this course:
+
+| Where | Tool | Use |
+| --- | --- | --- |
+| Browser | Chrome + DevTools Console | Pages, DOM, `fetch` |
+| Later, server | Node.js | APIs, files, databases |
+
+Today: browser only. Open DevTools with `F12` or `Ctrl+Shift+J` / `Cmd+Option+J`.
+
+### How to add JavaScript
+
+Three ways. Use an **external** file for real projects — same idea as CSS.
+
+```html
+<!-- 1. External (best) — defer waits for HTML, then runs -->
+<script src="js/app.js" defer></script>
+```
+
+Put that in `<head>`, or put `<script src="js/app.js"></script>` just before `</body>`. Either way the HTML exists before your code runs.
+
+```html
+<!-- 2. Internal — in the HTML file, before </body> -->
+<script>
+  console.log("School Portal");
+</script>
+```
+
+```html
+<!-- 3. Inline — on one element. Avoid for real apps. -->
+<button onclick="alert('Hi')">Click</button>
+```
+
+| Method | Where | Use |
+| --- | --- | --- |
+| External | `.js` file + `<script src>` | Whole site. One file, many pages |
+| Internal | `<script>` in the HTML | Quick demo on a single page |
+| Inline | `onclick=""` on a tag | Tiny demo — not for a whole app |
+
+Same folder idea as [file paths](#file-paths):
+
+```text
+project/
+  index.html
+  css/
+    styles.css
+  js/
+    app.js
+```
+
+From `index.html`: `src="js/app.js"`.
+
+**`defer`** = download the file while HTML parses, run it after the document is ready. Use it. Without it, a script in `<head>` can run too early and `querySelector` finds nothing.
+
+JS in the page is **case-sensitive**. `console.log` works. `Console.Log` does not.
+
+### Values and types
+
+Every value has a **type**.
+
+| Type | Example | Meaning |
+| --- | --- | --- |
+| `string` | `"Asha"` `'10-A'` `` `Hi` `` | Text. Quotes required |
+| `number` | `18` `0` `3.5` `-2` | Maths, counts, marks |
+| `boolean` | `true` `false` | Yes/no flags |
+| `undefined` | (no value yet) | Declared, not set |
+| `null` | `null` | Intentionally empty |
+| `object` | `{ name: "Asha" }` | Named fields ([Day 11](#day-11)) |
+| `array` | `["Asha", "Ravi"]` | Ordered list ([Day 10](#day-10)) |
+
+```javascript
+typeof "Asha";   // "string"
+typeof 18;       // "number"
+typeof true;     // "boolean"
+typeof undefined;// "undefined"
+```
+
+Strings and numbers are not the same:
+
+```javascript
+"10" + 2;  // "102"  (string join)
+10 + 2;    // 12     (maths)
+```
+
+Convert when you mean maths:
+
+```javascript
+Number("10");     // 10
+String(10);       // "10"
+Boolean("");      // false
+Boolean("Asha");  // true
+```
+
+`Number("hello")` is `NaN` (**N**ot **a** **N**umber). Check with `Number.isNaN(value)`.
+
+### Variables
+
+A **variable** is a named box that holds a value.
+
+```javascript
+const school = "Code Sagara";
+let seats = 30;
+seats = 29;           // let can change
+// school = "Other";  // Error — const cannot be reassigned
+```
+
+| Keyword | Reassign? | Use |
+| --- | --- | --- |
+| `const` | No | Default. Names, lists you mutate in place, functions |
+| `let` | Yes | Counts, flags, values that change |
+| `var` | Yes (old rules) | Do **not** use. Function-scoped, confusing |
+
+Names: **camelCase**, start with a letter. `studentName`, not `student-name` (that is minus).
+
+```javascript
+const studentName = "Asha";
+const maxMarks = 100;
+let isLoggedIn = false;
+```
+
+One statement per line. Optional semicolon; this course uses them.
+
+```javascript
+const section = "10-A";
+let lateCount = 0;
+```
+
+### Operators and strings
+
+**Arithmetic**
+
+| Op | Job | Example |
+| --- | --- | --- |
+| `+` `-` `*` `/` | Add, subtract, multiply, divide | `7 + 3` → `10` |
+| `%` | Remainder | `10 % 3` → `1` |
+| `**` | Power | `2 ** 3` → `8` |
+
+```javascript
+let marks = 40;
+marks += 10;  // 50  same as marks = marks + 10
+marks++;      // 51  add one
+```
+
+`+` on strings **concatenates** (joins):
+
+```javascript
+"Hello, " + "Asha";  // "Hello, Asha"
+```
+
+Prefer **template literals** (backticks) so variables sit inside the text:
+
+```javascript
+const name = "Asha";
+const section = "10-A";
+const message = `Welcome, ${name} (${section})`;
+```
+
+`${}` only works in backticks, not in `" "` or `' '`.
+
+**Logical / compare** is [Day 10](#day-10). Today remember: `===` is “same value and same type”.
+
+```javascript
+10 === "10";  // false
+10 == "10";   // true  (avoid — it converts types)
+```
+
+Always `===` and `!==` in this course.
+
+### Console and errors
+
+`console.log` prints to DevTools. It does **not** show on the page.
+
+```javascript
+const student = "Asha";
+console.log(student);
+console.log("marks", 40 + 10);
+console.log({ student, section: "10-A" });
+```
+
+| Method | Use |
+| --- | --- |
+| `console.log` | Inspect a value |
+| `console.warn` | Yellow warning |
+| `console.error` | Red error you logged |
+| `console.table` | Array or object as a table |
+
+The Console also **runs** code. Type `2 + 2` and press Enter.
+
+When something breaks, the Console shows the **file, line, and message**:
+
+```text
+Uncaught TypeError: Cannot read properties of null (reading 'addEventListener')
+    at app.js:4
+```
+
+That usually means `querySelector` found nothing (wrong selector, or script ran before the HTML). Fix the selector or add `defer`.
+
+`alert("Hello")` pops a blocking dialog. Fine for a 10-second demo. Use `console.log` or page text for real work.
+
+### Day 9 recap
+
+JS is behaviour. Attach it with `<script src="js/app.js" defer>`. Prefer `const`, use `let` when the value must change, skip `var`. Types matter: `"10"` is not `10`. Template literals build strings. The Console is how you see values and errors.
+
+Practice: `js/app.js` on the school homepage — `const` school name, `let` notice count, a template-literal welcome string, `console.log` all three. Break it on purpose (typo a variable) and read the Console error.
+
+[Back to index](#index)
+
+---
+
+## Day 10
+
+**Topic:** Decisions and loops  
+**Goal:** Students can branch with `if`/`else`, loop through a list, and store ordered data in an array.
+
+Quick reference for the questions JS asks every day: is this true, and do this for each item.
+
+### Comparisons and logic
+
+Comparisons produce a **boolean**.
+
+| Op | Meaning | Example |
+| --- | --- | --- |
+| `===` | Equal value **and** type | `section === "10-A"` |
+| `!==` | Not equal | `role !== "admin"` |
+| `>` `<` `>=` `<=` | Greater / less | `marks >= 40` |
+| `&&` | And — both true | `isStudent && feesPaid` |
+| `\|\|` | Or — at least one true | `isAdmin \|\| isTeacher` |
+| `!` | Not — flip boolean | `!isLoggedIn` |
+
+```javascript
+const marks = 72;
+const passing = marks >= 40;       // true
+const honour = marks >= 75 && marks <= 100;
+
+const isAdmin = false;
+const isTeacher = true;
+const staff = isAdmin || isTeacher;  // true
+```
+
+**Truthy / falsy** — `if (value)` asks “does this count as true?”
+
+Falsy (only these): `false`, `0`, `""`, `null`, `undefined`, `NaN`.
+
+Everything else is truthy: `"Asha"`, `1`, `[]`, `{}`.
+
+```javascript
+const name = "";
+if (!name) {
+  console.log("Name is required");
+}
+```
+
+Prefer an explicit check when it is clearer: `name === ""` or `marks >= 40`.
+
+### if and else
+
+```javascript
+const marks = 72;
+
+if (marks >= 75) {
+  console.log("Distinction");
+} else if (marks >= 40) {
+  console.log("Pass");
+} else {
+  console.log("Fail");
+}
+```
+
+Braces `{ }` around each branch. One `if`, any number of `else if`, optional final `else`.
+
+**Ternary** — a one-line choice that **produces a value**:
+
+```javascript
+const status = marks >= 40 ? "Pass" : "Fail";
+```
+
+Use it for short assignments. Nested ternaries are hard to read — use `if` instead.
+
+**`switch`** — when one value has many exact cases:
+
+```javascript
+const day = "Mon";
+
+switch (day) {
+  case "Mon":
+  case "Tue":
+  case "Wed":
+  case "Thu":
+  case "Fri":
+    console.log("School day");
+    break;
+  case "Sat":
+  case "Sun":
+    console.log("Weekend");
+    break;
+  default:
+    console.log("Unknown");
+}
+```
+
+`break` stops the case. Forget it and the next case runs too (**fall-through**). `if`/`else` is enough most days.
+
+### Loops
+
+A **loop** repeats work.
+
+**`for...of`** — walk each item in a list (use this first):
+
+```javascript
+const students = ["Asha", "Ravi", "Meera"];
+
+for (const name of students) {
+  console.log(`Hello, ${name}`);
+}
+```
+
+**`for`** — when you need the index or a count:
+
+```javascript
+for (let i = 0; i < students.length; i++) {
+  console.log(i, students[i]);
+}
+```
+
+`i` starts at `0` because array indexes start at `0`. `i < length` means “while there is still an item”. `i++` moves to the next.
+
+**`while`** — repeat until a condition is false:
+
+```javascript
+let seats = 3;
+while (seats > 0) {
+  console.log(`Seats left: ${seats}`);
+  seats--;
+}
+```
+
+If the condition never becomes false, the loop never ends. Always change something inside `while`.
+
+| Keyword | Job |
+| --- | --- |
+| `break` | Leave the loop now |
+| `continue` | Skip this round, do the next |
+
+```javascript
+for (const name of students) {
+  if (name === "Ravi") continue;  // skip Ravi
+  if (name === "Meera") break;    // stop at Meera
+  console.log(name);
+}
+```
+
+Do not use `for...in` on arrays (it walks keys, not values, and is meant for objects). Prefer `for...of`.
+
+### Arrays as lists
+
+An **array** is an ordered list. Indexes start at **0**.
+
+```javascript
+const notices = ["Sports day Friday", "Fees due", "PTM 10 Oct"];
+
+notices[0];           // "Sports day Friday"
+notices.length;       // 3
+notices[notices.length - 1];  // last item
+```
+
+```text
+index    0                      1           2
+value    "Sports day Friday"    "Fees due"  "PTM 10 Oct"
+```
+
+Change and grow:
+
+```javascript
+notices.push("Holiday Monday");  // add at end
+notices.pop();                   // remove last
+notices[1] = "Fees due Friday";  // replace
+```
+
+`const notices` still lets you **change items inside**. `const` blocks `notices = somethingElse`, not `notices.push(...)`.
+
+Empty list: `const scores = [];`
+
+Mixed types work (`[1, "Asha", true]`) but a list of one kind of thing is easier to reason about.
+
+Loop + if together:
+
+```javascript
+const marks = [72, 38, 91, 40];
+let passed = 0;
+
+for (const score of marks) {
+  if (score >= 40) {
+    passed++;
+  }
+}
+
+console.log(`${passed} of ${marks.length} passed`);
+```
+
+More array tools (`map`, `filter`, `find`) are [Day 11](#array-methods).
+
+### Day 10 recap
+
+`===` compares. `&&` / `||` / `!` combine booleans. `if`/`else` chooses a path. Loops repeat; `for...of` is the default for lists. Arrays are 0-based lists with `.length`, `.push`, and `.pop`.
+
+Practice: an array of five student marks. Loop and `console.log` Pass/Fail for each. Count how many passed. Then skip anyone with `0` using `continue`.
+
+[Back to index](#index)
+
+---
+
+## Day 11
+
+**Topic:** Functions, objects, and array methods  
+**Goal:** Students can write functions that return values, store related data in objects, and transform lists with `map` / `filter` / `find`.
+
+These three pieces are the data shape of React later: a function component, a student object, an array of students.
+
+### Functions
+
+A **function** is a named recipe. Define once, call many times.
+
+```javascript
+function greet(name) {
+  return `Hello, ${name}`;
+}
+
+greet("Asha");  // "Hello, Asha"
+greet("Ravi");  // "Hello, Ravi"
+```
+
+| Piece | Meaning |
+| --- | --- |
+| `function greet` | Name |
+| `(name)` | **Parameter** — input placeholder |
+| `{ ... }` | Body |
+| `return` | Send a value **out**. Stops the function |
+| `greet("Asha")` | **Call**. `"Asha"` is the **argument** |
+
+No `return` means the function returns `undefined`.
+
+```javascript
+function isPass(marks) {
+  return marks >= 40;
+}
+
+if (isPass(72)) {
+  console.log("Pass");
+}
+```
+
+**Arrow functions** — same idea, shorter. You will see these everywhere in React.
+
+```javascript
+const greet = (name) => {
+  return `Hello, ${name}`;
+};
+
+// one expression: implicit return
+const greetShort = (name) => `Hello, ${name}`;
+const isPass = (marks) => marks >= 40;
+```
+
+One parameter can drop parens: `name => \`Hello, ${name}\``. Zero or 2+ parameters need parens: `() => ...`, `(a, b) => ...`.
+
+Default parameters:
+
+```javascript
+function greet(name = "student") {
+  return `Hello, ${name}`;
+}
+
+greet();  // "Hello, student"
+```
+
+### Scope
+
+**Scope** = where a name is visible.
+
+```javascript
+const school = "Code Sagara";  // outer
+
+function banner() {
+  const label = "Portal";      // inner
+  return `${school} ${label}`; // inner can read outer
+}
+
+banner();
+// console.log(label);  // Error — label does not exist here
+```
+
+`let` and `const` are **block-scoped**: visible inside the nearest `{ }`.
+
+```javascript
+if (true) {
+  const status = "open";
+}
+// console.log(status);  // Error
+```
+
+That is why `var` is trouble (`var` ignores block `{ }` and leaks). Keep using `const` / `let`.
+
+A function can use outer variables. That is normal. If two functions need the same value, pass it as a **parameter** instead of reaching for a distant `let` — easier to test and reuse.
+
+### Objects
+
+An **object** groups related facts under **keys**.
+
+```javascript
+const student = {
+  name: "Asha",
+  section: "10-A",
+  marks: 72,
+  feesPaid: true,
+};
+```
+
+Read and write with dot notation:
+
+```javascript
+student.name;           // "Asha"
+student.marks = 80;
+student.absent = false; // add a key
+```
+
+Square brackets when the key is in a variable:
+
+```javascript
+const field = "section";
+student[field];  // "10-A"
+```
+
+Keys are strings. Values can be any type — including arrays and other objects.
+
+```javascript
+const student = {
+  name: "Asha",
+  subjects: ["Maths", "Science"],
+  address: { city: "Hyderabad", pin: "500001" },
+};
+
+student.subjects[0];     // "Maths"
+student.address.city;    // "Hyderabad"
+```
+
+**Shorthand** when the variable name matches the key:
+
+```javascript
+const name = "Asha";
+const marks = 72;
+const row = { name, marks };  // { name: "Asha", marks: 72 }
+```
+
+**Destructuring** pulls keys into variables:
+
+```javascript
+const { name, section } = student;
+```
+
+A list of objects is the usual app shape:
+
+```javascript
+const classList = [
+  { name: "Asha", marks: 72 },
+  { name: "Ravi", marks: 38 },
+  { name: "Meera", marks: 91 },
+];
+```
+
+`typeof []` is `"object"` (a JS quirk). Check arrays with `Array.isArray(value)`.
+
+### Array methods
+
+These return a **new** array (or a value). They do not replace `for...of`; they replace a loop that was only building another list.
+
+```javascript
+const classList = [
+  { name: "Asha", marks: 72 },
+  { name: "Ravi", marks: 38 },
+  { name: "Meera", marks: 91 },
+];
+```
+
+| Method | Job | Returns |
+| --- | --- | --- |
+| `forEach` | Run a function per item | `undefined` (side effects only) |
+| `map` | Turn each item into something else | New array, same length |
+| `filter` | Keep items that match | New, maybe shorter array |
+| `find` | First match | The item, or `undefined` |
+| `some` / `every` | Any / all match? | `boolean` |
+| `includes` | Is this value in the list? | `boolean` (primitives) |
+
+```javascript
+classList.forEach((row) => {
+  console.log(row.name);
+});
+
+const names = classList.map((row) => row.name);
+// ["Asha", "Ravi", "Meera"]
+
+const passed = classList.filter((row) => row.marks >= 40);
+// Asha and Meera objects
+
+const ravi = classList.find((row) => row.name === "Ravi");
+
+const anyoneFailed = classList.some((row) => row.marks < 40);  // true
+const allPassed = classList.every((row) => row.marks >= 40);   // false
+```
+
+Chain when it stays readable:
+
+```javascript
+const honourNames = classList
+  .filter((row) => row.marks >= 75)
+  .map((row) => row.name);
+```
+
+Mutating helpers you already used: `push`, `pop`, `shift` (remove first), `unshift` (add first). Prefer `map`/`filter` when you are deriving a new list for the screen.
+
+**Spread** copies an array or object (new box, same values):
+
+```javascript
+const copy = [...classList];
+const withNew = [...classList, { name: "Irfan", marks: 64 }];
+const updated = { ...student, marks: 80 };
+```
+
+React state updates will look like that: copy, then change.
+
+### Day 11 recap
+
+Functions take arguments and `return` values. Arrow functions are the short form. `let`/`const` live in a block. Objects hold named fields; arrays of objects are typical app data. `map` transforms, `filter` keeps, `find` picks one.
+
+Practice: `classList` of 4 students. Write `isPass(marks)`, `filter` the pass list, `map` to names, `find` one student by name. `console.table` the pass list.
+
+[Back to index](#index)
+
+---
+
+## Day 12
+
+**Topic:** The DOM  
+**Goal:** Students can select elements, change text and classes, create a list item in JS, and run code on click.
+
+This is how JS meets the HTML from Days 3–5.
+
+### The DOM
+
+The **DOM** (Document Object Model) is the browser’s live tree of the page. Tags become **nodes** JS can read and change.
+
+```text
+document
+  html
+    head
+    body
+      h1
+      ul
+        li
+        li
+```
+
+HTML is the source file. The DOM is that tree **in memory** after the browser parses it. `document` is the root object.
+
+```javascript
+document.title;                 // tab title
+document.body;                  // the <body> element
+```
+
+Change the DOM → the screen updates. You do not rewrite the `.html` file; you change the live tree.
+
+### Selecting elements
+
+Same selectors as CSS ([Day 6](#selectors)).
+
+```javascript
+const heading = document.querySelector("h1");
+const loginBtn = document.querySelector("#login");
+const cards = document.querySelectorAll(".card");
+```
+
+| Call | Returns |
+| --- | --- |
+| `querySelector("css")` | **First** match, or `null` |
+| `querySelectorAll("css")` | A **NodeList** (all matches) |
+| `getElementById("login")` | The `#login` element, or `null` |
+
+`null` means “not on the page”. Calling a method on `null` crashes. Guard it:
+
+```javascript
+const heading = document.querySelector("h1");
+if (!heading) {
+  console.error("No h1 found");
+}
+```
+
+NodeList is not a full array. Convert if you need `map`:
+
+```javascript
+const texts = [...document.querySelectorAll(".card")].map(
+  (el) => el.textContent
+);
+```
+
+Or loop:
+
+```javascript
+document.querySelectorAll(".card").forEach((card) => {
+  card.classList.add("is-ready");
+});
+```
+
+Need a **hook** in the HTML: `id` for one thing, `class` for a group — from [Day 3](#comments-and-common-attributes).
+
+```html
+<h1 id="page-title">School Portal</h1>
+<ul id="notices"></ul>
+<button type="button" id="add-notice">Add notice</button>
+```
+
+### Changing the page
+
+```javascript
+const heading = document.querySelector("#page-title");
+
+heading.textContent = "Student Portal";  // text only, safe
+heading.innerHTML = "Student <em>Portal</em>"; // parses HTML — careful
+```
+
+| Property / method | Job |
+| --- | --- |
+| `textContent` | Get/set plain text (preferred) |
+| `innerHTML` | Get/set HTML inside. Do **not** put user input here (XSS) |
+| `classList.add` / `remove` / `toggle` / `contains` | CSS classes |
+| `style` | Inline style. Prefer classes |
+| `setAttribute` / `getAttribute` | Any attribute (`href`, `hidden`, `disabled`) |
+| `hidden` | Boolean show/hide |
+| `value` | Input/textarea/select current value |
+
+```javascript
+const alertBox = document.querySelector(".alert");
+alertBox.classList.add("is-visible");
+alertBox.classList.toggle("is-urgent");
+
+const email = document.querySelector("#email");
+console.log(email.value);
+email.value = "";
+```
+
+CSS:
+
+```css
+.alert { display: none; }
+.alert.is-visible { display: block; }
+```
+
+JS toggles the class. CSS owns the look — same split as Days 6–8.
+
+### Creating elements
+
+```javascript
+const list = document.querySelector("#notices");
+
+const item = document.createElement("li");
+item.textContent = "Sports day Friday";
+list.append(item);
+```
+
+| Call | Job |
+| --- | --- |
+| `createElement("li")` | New element, not on the page yet |
+| `append(node)` | Add as last child |
+| `prepend(node)` | Add as first child |
+| `remove()` | Take this element off the page |
+| `replaceChildren(...)` | Clear and put these in |
+
+Build from an array ([Day 11](#array-methods)):
+
+```javascript
+const notices = ["Sports day Friday", "Fees due", "PTM 10 Oct"];
+const list = document.querySelector("#notices");
+
+list.replaceChildren(); // clear
+
+notices.forEach((text) => {
+  const li = document.createElement("li");
+  li.textContent = text;
+  list.append(li);
+});
+```
+
+`textContent` for the words. If you need a structure (link inside `li`), create each child — do not concatenate untrusted HTML into `innerHTML`.
+
+### Click events
+
+An **event** is something that happened. You **listen**, then run a function.
+
+```javascript
+const button = document.querySelector("#add-notice");
+
+button.addEventListener("click", () => {
+  console.log("clicked");
+});
+```
+
+The second argument is a **callback** — a function you pass in, the browser calls later.
+
+The listener receives an **event object**:
+
+```javascript
+button.addEventListener("click", (event) => {
+  console.log(event.target);  // the element that was clicked
+});
+```
+
+| Idea | Meaning |
+| --- | --- |
+| `addEventListener("click", fn)` | Run `fn` on click |
+| `event.target` | The element that fired the event |
+| `event.preventDefault()` | Stop the default (link jump, form submit) — [Day 13](#form-events) |
+| `button.disabled = true` | Stop extra clicks |
+
+`type="button"` on `<button>` so it does **not** submit a form by accident ([Day 5](#forms)).
+
+Put listeners in `app.js` after the HTML is ready (`defer` from [Day 9](#how-to-add-javascript)). Do not put `onclick="..."` in the HTML for course work.
+
+A tiny page:
+
+```javascript
+const button = document.querySelector("#add-notice");
+const list = document.querySelector("#notices");
+let count = 1;
+
+button.addEventListener("click", () => {
+  const li = document.createElement("li");
+  li.textContent = `Notice ${count}`;
+  list.append(li);
+  count++;
+});
+```
+
+### Day 12 recap
+
+The DOM is the live page tree. `querySelector` finds nodes. `textContent` and `classList` change them. `createElement` + `append` build new nodes. `addEventListener("click", ...)` runs your function when the user clicks.
+
+Practice: notices `<ul>` and an Add button. Each click appends a new `<li>`. A second button clears the list with `replaceChildren()`. Toggle an `.is-visible` class on an alert box.
+
+[Back to index](#index)
+
+---
+
+## Day 13
+
+**Topic:** Forms, events, and `localStorage`  
+**Goal:** Students can handle submit without a page reload, read fields, listen to input/change, and save a string in `localStorage`.
+
+This is JS on the register form from [Day 5](#day-5).
+
+### Form events
+
+Default submit **reloads** the page and sends the form to `action`. For a JS app, stop that and read the fields yourself.
+
+```html
+<form id="register">
+  <label for="student-name">Name</label>
+  <input id="student-name" name="name" required>
+
+  <label for="student-email">Email</label>
+  <input id="student-email" name="email" type="email" required>
+
+  <button type="submit">Register</button>
+</form>
+<p id="form-status" hidden></p>
+```
+
+```javascript
+const form = document.querySelector("#register");
+const status = document.querySelector("#form-status");
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const data = new FormData(event.target);
+  const name = data.get("name");
+  const email = data.get("email");
+
+  if (!name || !email) {
+    status.hidden = false;
+    status.textContent = "Name and email are required.";
+    return;
+  }
+
+  status.hidden = false;
+  status.textContent = `Saved ${name} (${email})`;
+  form.reset();
+});
+```
+
+| Piece | Job |
+| --- | --- |
+| `submit` | Fires on button or Enter in a field |
+| `preventDefault()` | No reload, no navigation |
+| `FormData(form)` | Reads every control that has a `name` |
+| `data.get("email")` | One field (matches `name="email"`) |
+| `form.reset()` | Clear the controls |
+
+You can also read `document.querySelector("#student-email").value`. `FormData` scales better when the form grows.
+
+HTML `required` / `type="email"` still help. JS checks are for extra rules (password length, matching fields) and for when you send JSON later.
+
+Listen to **input** for live feedback:
+
+```javascript
+const email = document.querySelector("#student-email");
+
+email.addEventListener("input", () => {
+  email.classList.toggle("is-invalid", email.validity.typeMismatch);
+});
+```
+
+`change` fires when the value is committed (blur on text, pick on select). `input` fires on every keystroke.
+
+### Other events
+
+| Event | Typical on | When |
+| --- | --- | --- |
+| `click` | button, anything | Pointer click |
+| `submit` | form | Submit |
+| `input` | input, textarea | Value is changing |
+| `change` | select, checkbox, radio | Value committed |
+| `keydown` | document, input | Key pressed |
+| `DOMContentLoaded` | document | HTML parsed (if you did not use `defer`) |
+
+```javascript
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    const modal = document.querySelector(".modal");
+    if (modal) {
+      modal.classList.remove("is-open");
+    }
+  }
+});
+```
+
+`event.key` is `"Enter"`, `"Escape"`, `"a"`, … Check `event.target` if you only care when focus is in one field.
+
+**Delegation** — listen on a parent when many children do the same thing (a list of delete buttons):
+
+```javascript
+const list = document.querySelector("#notices");
+
+list.addEventListener("click", (event) => {
+  const btn = event.target.closest("[data-delete]");
+  if (!btn) return;
+  btn.closest("li").remove();
+});
+```
+
+`data-delete` is an HTML **data attribute**: `<button type="button" data-delete>Remove</button>`.
+
+**Timers** (optional):
+
+```javascript
+setTimeout(() => {
+  status.hidden = true;
+}, 3000);  // ms
+
+const id = setInterval(() => {
+  console.log("tick");
+}, 1000);
+
+clearInterval(id);
+```
+
+### localStorage
+
+`localStorage` saves **strings** in the browser. They survive refresh. They do not go to your server.
+
+```javascript
+localStorage.setItem("school-theme", "dark");
+const theme = localStorage.getItem("school-theme"); // "dark" or null
+localStorage.removeItem("school-theme");
+```
+
+Objects and arrays must become JSON strings:
+
+```javascript
+const student = { name: "Asha", section: "10-A" };
+
+localStorage.setItem("student", JSON.stringify(student));
+
+const saved = JSON.parse(localStorage.getItem("student"));
+// saved.name === "Asha"
+```
+
+`JSON.parse` throws if the string is not JSON. Guard:
+
+```javascript
+function readStudent() {
+  const raw = localStorage.getItem("student");
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+```
+
+| Limit | Meaning |
+| --- | --- |
+| Strings only | Use `JSON.stringify` / `JSON.parse` |
+| Per origin | `http://localhost:3000` ≠ a deployed site |
+| Visible to JS | Do **not** store passwords |
+| ~5MB | Fine for a student object, not for videos |
+
+`sessionStorage` is the same API; it clears when the tab closes.
+
+### Small UI patterns
+
+**Show / hide**
+
+```javascript
+function show(el) {
+  el.hidden = false;
+}
+function hide(el) {
+  el.hidden = true;
+}
+```
+
+**Disable while working**
+
+```javascript
+button.disabled = true;
+button.textContent = "Saving…";
+```
+
+**Render a list from data** (one function you call after every change):
+
+```javascript
+const notices = ["Sports day Friday", "Fees due"];
+
+function renderNotices() {
+  const list = document.querySelector("#notices");
+  list.replaceChildren();
+  notices.forEach((text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    list.append(li);
+  });
+}
+
+renderNotices();
+```
+
+Keep **data in JS** (the array). The DOM is a view of that data. After `push` / `filter`, call `renderNotices()` again. That is the same idea React will use with state.
+
+Save the array:
+
+```javascript
+localStorage.setItem("notices", JSON.stringify(notices));
+```
+
+On load, read it, then render.
+
+### Day 13 recap
+
+`submit` + `preventDefault` + `FormData` reads a form without reload. `input` / `change` / `keydown` cover the rest. `localStorage` persists strings; JSON packs objects. Keep an array in JS and re-render the DOM from it.
+
+Practice: register form — prevent submit, show a status message, `localStorage.setItem` a JSON student. On refresh, `JSON.parse` and fill a “Last saved: Asha” line. Extra: notices list that saves to `localStorage`.
+
+[Back to index](#index)
+
+---
+
+## Day 14
+
+**Topic:** Async JS and `fetch`  
+**Goal:** Students can explain a Promise, use `async`/`await`, `GET` JSON with `fetch`, and say how this talks to a Node API later.
+
+The browser must **wait** for the network without freezing the page.
+
+### Sync vs async
+
+**Synchronous** code runs top to bottom. Each line waits for the one above.
+
+```javascript
+const a = 1;
+const b = a + 1;
+console.log(b);  // 2 — you know this now
+```
+
+**Asynchronous** work finishes **later**: network, timers, user clicks. The rest of the page stays usable.
+
+```text
+JS:  fetch /api/students
+     …page still clicks, types, paints…
+later: response arrives → your callback / await continues
+```
+
+If `fetch` were sync, the tab would freeze until the server replied.
+
+Events from Days 12–13 are already async: `addEventListener` runs your function **later**, not when you registered it.
+
+### Promises and async/await
+
+A **Promise** is an object for a value that is not ready yet.
+
+| State | Meaning |
+| --- | --- |
+| pending | Still working |
+| fulfilled | Got a result (`then`) |
+| rejected | Failed (`catch`) |
+
+```javascript
+fetch("https://jsonplaceholder.typicode.com/users/1")
+  .then((response) => response.json())
+  .then((user) => {
+    console.log(user.name);
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+```
+
+**`async` / `await`** is the same idea, written like sync code. Prefer this in the course.
+
+```javascript
+async function loadUser() {
+  try {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/users/1"
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const user = await response.json();
+    console.log(user.name);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+loadUser();
+```
+
+| Piece | Job |
+| --- | --- |
+| `async function` | Lets you use `await` inside. Returns a Promise |
+| `await promise` | Pause **this function** until it finishes. Not the whole page |
+| `try` / `catch` | Run `catch` if `throw` or a rejected Promise |
+| `response.ok` | HTTP 200–299. `fetch` only rejects on network failure, **not** on 404 |
+
+You can only `await` inside `async` (or a module top level, later). Button handlers:
+
+```javascript
+button.addEventListener("click", async () => {
+  await loadUser();
+});
+```
+
+### fetch and JSON
+
+**`fetch`** sends an HTTP request and returns a Promise of a **Response**.
+
+**JSON** (JavaScript Object Notation) is text that looks like a JS object. APIs send JSON. `response.json()` parses that text into a real object/array.
+
+```javascript
+async function loadStudents() {
+  const response = await fetch("/api/students");
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.json();  // array of student objects
+}
+```
+
+**GET** is the default (read). **POST** sends a body (create) — you will use this with Node:
+
+```javascript
+async function registerStudent(student) {
+  const response = await fetch("/api/students", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(student),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+await registerStudent({ name: "Asha", section: "10-A" });
+```
+
+| Piece | Job |
+| --- | --- |
+| `JSON.stringify(obj)` | Object → string for `localStorage` or a request body |
+| `JSON.parse(text)` | String → object |
+| `response.json()` | Read body and parse JSON (async) |
+| `Content-Type: application/json` | Tell the server the body is JSON |
+
+Render what you got ([Day 12](#creating-elements)):
+
+```javascript
+async function showStudents() {
+  const status = document.querySelector("#status");
+  const list = document.querySelector("#students");
+
+  status.textContent = "Loading…";
+  try {
+    const students = await loadStudents();
+    list.replaceChildren();
+    students.forEach((row) => {
+      const li = document.createElement("li");
+      li.textContent = `${row.name} (${row.section})`;
+      list.append(li);
+    });
+    status.textContent = "";
+  } catch (error) {
+    status.textContent = "Could not load students.";
+    console.error(error);
+  }
+}
+```
+
+Always handle failure on the screen, not only in `console.error`.
+
+Public demo API for practice (no key, fake data): `https://jsonplaceholder.typicode.com/users`.
+
+Opening an HTML file as `file://` can block `fetch` to other sites. Use a small local server (VS Code Live Server, or `npx serve`) when you practise network calls.
+
+### How JS connects to React and Node
+
+```text
+Browser JS (today)
+  querySelector, addEventListener, fetch
+        ↓
+React (next)
+  still JavaScript: functions, objects, arrays, map/filter
+  still fetch (or a library) to talk to the server
+  the DOM is updated for you from state
+        ↓
+Node.js
+  JavaScript on the server
+  receives fetch POST / GET
+  reads/writes MongoDB or SQL
+```
+
+What carries forward:
+
+| You learned | In React / Node |
+| --- | --- |
+| `const` / `let`, `===`, template literals | Same |
+| Functions, arrows, `return` | Components are functions |
+| Objects + arrays of objects | Props, state, documents |
+| `map` / `filter` | Lists on screen |
+| `JSON.stringify` / `parse` | API bodies |
+| `fetch` + `async`/`await` | Load and save data |
+| `import` / `export` (next) | Split files; React components |
+
+```javascript
+// you will write this shape soon
+export function greet(name) {
+  return `Hello, ${name}`;
+}
+
+import { greet } from "./greet.js";
+```
+
+Browsers need `type="module"` on the script (or a bundler). Node and Vite/React set that up. The language is the same.
+
+Chrome DevTools: **Network** tab shows each `fetch` (status, payload). **Console** shows errors. Use both, like [Day 1](#chrome-devtools).
+
+### JS cheat sheet
+
+| Goal | JS |
+| --- | --- |
+| Attach file | `<script src="js/app.js" defer></script>` |
+| Constant / changing | `const x = 1;` / `let n = 0;` |
+| String with values | `` `Hello, ${name}` `` |
+| Same value and type | `===` / `!==` |
+| Branch | `if (cond) { } else { }` |
+| Loop a list | `for (const item of list) { }` |
+| Array | `const xs = [];` `xs.push(item)` |
+| Function | `function f(a) { return a; }` |
+| Arrow | `const f = (a) => a;` |
+| Object | `const row = { name: "Asha", marks: 72 };` |
+| Transform list | `xs.map((x) => x.name)` |
+| Keep some | `xs.filter((x) => x.marks >= 40)` |
+| First match | `xs.find((x) => x.name === "Asha")` |
+| Select | `document.querySelector("#id")` |
+| Text | `el.textContent = "Hi"` |
+| Class | `el.classList.add("is-open")` |
+| New node | `document.createElement("li")` + `list.append(li)` |
+| Click | `el.addEventListener("click", () => { })` |
+| Form | `event.preventDefault()` + `new FormData(form)` |
+| Save locally | `localStorage.setItem("k", JSON.stringify(obj))` |
+| Read locally | `JSON.parse(localStorage.getItem("k"))` |
+| HTTP GET | `const data = await (await fetch(url)).json()` |
+| Check HTTP | `if (!response.ok) throw new Error(...)` |
+| Wait | `async function f() { await promise; }` |
+| Errors | `try { } catch (error) { }` |
+
+### Day 14 recap
+
+Sync code waits in line. Async work finishes later so the page stays alive. A Promise is that later value. `async`/`await` plus `try`/`catch` is how you write it. `fetch` loads JSON from a URL; `response.ok` matters. React will reuse functions, objects, arrays, and `fetch`. Node will *be* the URL you call.
+
+JavaScript across Days 9–14 is the **behaviour** of every web screen in this course — including React screens, which are still JS functions rendering HTML.
+
+Practice: fetch `https://jsonplaceholder.typicode.com/users`, render `name` and `email` into a `<ul>`, show “Loading…” then a clear error if the network fails. Extra: a Register button that `POST`s JSON (the demo API will echo it) and `console.log` the result.
+
+[Back to index](#index)
+
