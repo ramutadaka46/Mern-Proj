@@ -22,6 +22,12 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
 | [Day 12](#day-12) | JS DOM | Select, change, create elements, click events |
 | [Day 13](#day-13) | JS forms and storage | Submit, other events, localStorage, UI patterns |
 | [Day 14](#day-14) | JS async and fetch | Promises, async/await, fetch, JSON, cheat sheet |
+| [Day 15](#day-15) | React basics | What React is, Vite, JSX, function components |
+| [Day 16](#day-16) | React props and lists | Props, children, conditionals, lists, keys |
+| [Day 17](#day-17) | React state | useState, events, immutable updates, controlled inputs |
+| [Day 18](#day-18) | React effects | useEffect, fetch, loading/error, cleanup |
+| [Day 19](#day-19) | React Router | SPA routes, Link, params, layouts |
+| [Day 20](#day-20) | React data flow | Context, custom hooks, Node API, cheat sheet |
 
 - [Day 1 — Tech overview](#day-1)
   - [HTML](#html)
@@ -137,6 +143,45 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
   - [How JS connects to React and Node](#how-js-connects-to-react-and-node)
   - [JS cheat sheet](#js-cheat-sheet)
   - [Day 14 recap](#day-14-recap)
+- [Day 15 — React basics](#day-15)
+  - [What React is](#what-react-is)
+  - [Vite and the first app](#vite-and-the-first-app)
+  - [Project files](#project-files)
+  - [JSX](#jsx)
+  - [Function components](#function-components)
+  - [Day 15 recap](#day-15-recap)
+- [Day 16 — React props and lists](#day-16)
+  - [Props](#props)
+  - [children](#children)
+  - [Conditional rendering](#conditional-rendering)
+  - [Lists and keys](#lists-and-keys)
+  - [Splitting components](#splitting-components)
+  - [Day 16 recap](#day-16-recap)
+- [Day 17 — React state](#day-17)
+  - [useState](#usestate)
+  - [Events in React](#events-in-react)
+  - [Updating state](#updating-state)
+  - [Controlled inputs](#controlled-inputs)
+  - [Lifting state](#lifting-state)
+  - [Day 17 recap](#day-17-recap)
+- [Day 18 — React effects](#day-18)
+  - [useEffect](#useeffect)
+  - [Fetching data](#fetching-data)
+  - [Loading and error](#loading-and-error)
+  - [Cleanup](#cleanup)
+  - [Day 18 recap](#day-18-recap)
+- [Day 19 — React Router](#day-19)
+  - [SPA routes](#spa-routes)
+  - [Link and NavLink](#link-and-navlink)
+  - [Params and navigate](#params-and-navigate)
+  - [Layout routes](#layout-routes)
+  - [Day 19 recap](#day-19-recap)
+- [Day 20 — React data flow](#day-20)
+  - [Context](#context)
+  - [Custom hooks](#custom-hooks)
+  - [How React connects to Node](#how-react-connects-to-node)
+  - [React cheat sheet](#react-cheat-sheet)
+  - [Day 20 recap](#day-20-recap)
 
 ---
 
@@ -203,7 +248,7 @@ HTML = structure, CSS = style, JavaScript = behaviour.
 
 ### React and React Native
 
-**React** — a JavaScript library for building web UIs from reusable **components**. Used for websites and web apps.
+**React** — a JavaScript library for building web UIs from reusable **components**. Used for websites and web apps. Full lessons are [Day 15](#day-15) through [Day 20](#day-20).
 
 **React Native** — same idea (components, JavaScript), but it builds **mobile apps** (iOS and Android) instead of a website.
 
@@ -3109,7 +3154,7 @@ Practice: `classList` of 4 students. Write `isPass(marks)`, `filter` the pass li
 
 **Topic:** The DOM  
 **Goal:** Students can select elements, change text and classes, create a list item in JS, and run code on click.
-
+**Recording** https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day12.mp4
 This is how JS meets the HTML from Days 3–5.
 
 ### The DOM
@@ -3781,4 +3826,1225 @@ JavaScript across Days 9–14 is the **behaviour** of every web screen in this c
 Practice: fetch `https://jsonplaceholder.typicode.com/users`, render `name` and `email` into a `<ul>`, show “Loading…” then a clear error if the network fails. Extra: a Register button that `POST`s JSON (the demo API will echo it) and `console.log` the result.
 
 [Back to index](#index)
+
+---
+
+## Day 15
+
+**Topic:** React basics  
+**Goal:** Students can create a Vite React app, explain JSX, and write a function component that shows school-portal content.
+
+React is still JavaScript from Days 9–14. The new idea: **describe the UI**, and React updates the DOM for you.
+
+### What React is
+
+**React** is a JavaScript **library** for building UIs from **components** — functions that return markup.
+
+```text
+Vanilla JS (Days 12–13)     React (Days 15–20)
+querySelector               components return JSX
+addEventListener            onClick={handler}
+array + renderNotices()     state → React re-renders
+innerHTML / createElement   React builds the DOM
+```
+
+You still write HTML-looking tags and CSS classes. You do **not** throw away Days 3–8. React **emits** HTML; CSS still styles it (`className` instead of `class`).
+
+```text
+Component function
+  → returns JSX (looks like HTML)
+  → React compares to last tree
+  → browser DOM updates
+```
+
+**React Native** (Day 1) is the same component idea for phones. This week is **React for the web**.
+
+Why not keep `querySelector` forever? Big pages become a tangle of listeners and `innerHTML`. React keeps **data in JS** and redraws the view — the pattern from [Day 13](#small-ui-patterns), scaled up.
+
+### Vite and the first app
+
+**Vite** is the build tool: dev server, JSX compile, fast refresh when you save. Do **not** use Create React App (retired).
+
+Need **Node.js** (LTS) so `npm` works. In the terminal:
+
+```bash
+npm create vite@latest school-portal -- --template react
+cd school-portal
+npm install
+npm run dev
+```
+
+Open the URL it prints (usually `http://localhost:5173`). Save a file → the browser updates without a full reload.
+
+| Script | Job |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` | Production files in `dist/` |
+| `npm run preview` | Serve that build locally |
+
+`-- --template react` is JavaScript + JSX. `react-ts` is TypeScript — later, not this week.
+
+If the command asks questions interactively, pick **React** then **JavaScript**.
+
+### Project files
+
+A Vite React app looks like this:
+
+```text
+school-portal/
+  index.html          → one HTML file; <div id="root">
+  package.json        → dependencies and scripts
+  vite.config.js      → Vite settings (leave default)
+  src/
+    main.jsx          → mounts React into #root
+    App.jsx           → root component you edit first
+    App.css           → styles for App
+    index.css         → global CSS
+    assets/           → images the bundler can import
+```
+
+`index.html` is still the entry page ([Day 3](#page-skeleton)). React fills `#root`:
+
+```jsx
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <App />
+  </StrictMode>
+);
+```
+
+**StrictMode** (development only) double-checks for unsafe patterns. Effects may run twice in dev — [Day 18](#useeffect). Do not remove it to “fix” that.
+
+`import` / `export` is how files share code ([Day 14](#how-js-connects-to-react-and-node)). One component per file is a good default.
+
+### JSX
+
+**JSX** = JavaScript XML. It looks like HTML inside JS. Vite compiles it before the browser sees it.
+
+```jsx
+const school = "Code Sagara";
+
+function Banner() {
+  return <h1>Welcome to {school}</h1>;
+}
+```
+
+`{ }` drops a JS expression into the markup — same idea as template literals, but in the tree.
+
+Rules (the compiler will error if you skip them):
+
+| Rule | Do this |
+| --- | --- |
+| One parent | Wrap siblings in `<>...</>` (fragment) or a `<div>` |
+| `className` | Not `class` (`class` is a JS keyword) |
+| `htmlFor` | On labels, not `for` |
+| Close every tag | `<img />` `<input />` `<br />` |
+| camelCase props | `onClick`, `tabIndex`, `backgroundColor` in `style` |
+| JS comments | `{/* comment */}` inside JSX |
+
+```jsx
+function Page() {
+  return (
+    <>
+      <h1 className="title">School Portal</h1>
+      <img src="/logo.png" alt="School logo" />
+    </>
+  );
+}
+```
+
+**Inline style** is an object, not a CSS string:
+
+```jsx
+<p style={{ color: "navy", fontSize: 18 }}>Notices</p>
+```
+
+Prefer a CSS file + `className` (Days 6–8). Import CSS from the component:
+
+```jsx
+import "./Banner.css";
+```
+
+JSX is **not** a string. Do not `innerHTML` it. User text goes in `{name}` — React escapes it (safer than [Day 12](#changing-the-page) `innerHTML`).
+
+### Function components
+
+A **component** is a function whose name is **PascalCase** and that **returns JSX**.
+
+```jsx
+function Notice() {
+  return <p>Sports day Friday</p>;
+}
+
+export default function App() {
+  return (
+    <main>
+      <h1>School Portal</h1>
+      <Notice />
+      <Notice />
+    </main>
+  );
+}
+```
+
+`<Notice />` **calls** `Notice`. You can render it many times.
+
+| Piece | Meaning |
+| --- | --- |
+| `function Notice()` | Component (must start with a capital letter) |
+| `return (...)` | The UI for this piece |
+| `<Notice />` | Use it (like an HTML tag you invented) |
+| `export default` | Main thing this file sells (`import App from "./App.jsx"`) |
+
+`notice()` as a tag would be treated as an HTML element named `notice`. **Capital letter = component.**
+
+Keep components small: one job (a banner, a notice card, a student row). Props and lists are [Day 16](#day-16).
+
+Replace the starter counter in `App.jsx` with school-portal markup so you are reading *your* code, not the template.
+
+### Day 15 recap
+
+React is components: functions that return JSX. Vite runs the app (`npm run dev`). JSX looks like HTML with `{ }`, `className`, and a single parent. PascalCase names; `<Notice />` renders the function.
+
+Practice: scaffold `school-portal` with Vite. In `App.jsx`, render a heading, a short welcome, and two `Notice` components. Add `className` and style it with the CSS you already know. Confirm save-refresh works.
+
+[Back to index](#index)
+
+---
+
+## Day 16
+
+**Topic:** Props, conditionals, and lists  
+**Goal:** Students can pass data into components, hide/show with `if` or `&&`, and render an array with `map` and a stable `key`.
+
+This is objects + `map` from [Day 11](#day-11), drawn on screen.
+
+### Props
+
+**Props** (properties) are inputs to a component — like function arguments.
+
+```jsx
+function Notice({ title, urgent }) {
+  return (
+    <article className={urgent ? "notice is-urgent" : "notice"}>
+      <h2>{title}</h2>
+    </article>
+  );
+}
+
+export default function App() {
+  return (
+    <>
+      <Notice title="Sports day Friday" urgent={true} />
+      <Notice title="Library hours" urgent={false} />
+    </>
+  );
+}
+```
+
+`{ title, urgent }` is **destructuring** ([Day 11](#objects)). Same as `function Notice(props)` then `props.title`.
+
+Rules:
+
+- Parent **passes**. Child **reads**. The child must not assign to a prop (`title = "..."` is wrong).
+- Names are camelCase. Booleans: `urgent={true}` or just `urgent` (means true).
+- Strings can use quotes: `title="Sports day Friday"`.
+- Anything else uses `{ }`: `marks={72}`, `student={row}`.
+
+Default values:
+
+```jsx
+function Notice({ title, urgent = false }) {
+  // ...
+}
+```
+
+Think: HTML attributes in, JS values in `{ }`. The component is a function; props are the parameter object.
+
+### children
+
+**`children`** is whatever you nest between the tags.
+
+```jsx
+function Card({ children }) {
+  return <section className="card">{children}</section>;
+}
+
+<Card>
+  <h2>Fees</h2>
+  <p>Due 10 Oct.</p>
+</Card>
+```
+
+Use it for wrappers (layout, card, modal shell) so the parent decides the inside. Same idea as `<div>` containing other tags.
+
+### Conditional rendering
+
+JSX can return **different trees**. Use JS you already know.
+
+**`if` / `else`**
+
+```jsx
+function Status({ marks }) {
+  if (marks >= 40) {
+    return <p className="ok">Pass</p>;
+  }
+  return <p className="bad">Fail</p>;
+}
+```
+
+**`&&`** — show this or nothing (falsy → render nothing):
+
+```jsx
+{urgent && <span className="badge">Urgent</span>}
+```
+
+Do not write `{count && <p>{count}</p>}` when `count` can be `0` — `0` is falsy and React will show `0`. Prefer `{count > 0 && ...}` or a ternary.
+
+**Ternary** — two options:
+
+```jsx
+<p>{isLoggedIn ? `Hi, ${name}` : "Please log in"}</p>
+```
+
+`null` or `false` in JSX means “render nothing”:
+
+```jsx
+{isAdmin ? <button type="button">Delete</button> : null}
+```
+
+### Lists and keys
+
+Turn an **array of objects** into components with `.map` ([Day 11](#array-methods)).
+
+```jsx
+const notices = [
+  { id: "n1", title: "Sports day Friday" },
+  { id: "n2", title: "Fees due" },
+  { id: "n3", title: "PTM 10 Oct" },
+];
+
+function NoticeList() {
+  return (
+    <ul>
+      {notices.map((row) => (
+        <li key={row.id}>
+          <Notice title={row.title} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+**`key`** is a string (or number) that is **stable and unique among siblings**. React uses it to match items after a re-render.
+
+| Key | Use? |
+| --- | --- |
+| `row.id` from data / database | Yes — best |
+| Index `key={i}` | Only if the list never reorders or shrinks |
+| Random `key={Math.random()}` | Never — new key every render = broken list |
+
+Missing `key` → console warning. Duplicate keys → wrong updates when the list changes.
+
+Filter then map, same as Day 11:
+
+```jsx
+{notices
+  .filter((row) => row.urgent)
+  .map((row) => (
+    <Notice key={row.id} title={row.title} urgent />
+  ))}
+```
+
+### Splitting components
+
+As the page grows, split files. Default export for the main component in the file:
+
+```text
+src/
+  App.jsx
+  components/
+    Banner.jsx
+    Notice.jsx
+    NoticeList.jsx
+```
+
+```jsx
+// Notice.jsx
+export default function Notice({ title, urgent = false }) {
+  return (
+    <article className={urgent ? "notice is-urgent" : "notice"}>
+      <h2>{title}</h2>
+    </article>
+  );
+}
+```
+
+```jsx
+import Notice from "./components/Notice.jsx";
+```
+
+**Named export** when one file has helpers:
+
+```jsx
+export function formatMarks(n) {
+  return `${n}/100`;
+}
+```
+
+```jsx
+import { formatMarks } from "./formatMarks.js";
+```
+
+Keep data (the `notices` array) close to the parent that owns the list. Children receive **one row** as props. State that *changes* the list is [Day 17](#day-17).
+
+### Day 16 recap
+
+Props are arguments. `children` is nested JSX. `&&` / ternary / `if` pick what to show. `.map` builds lists; **`key` is a stable id**. Split files when a component has a clear name.
+
+Practice: `notices` array of 4 objects (`id`, `title`, `urgent`). `NoticeList` maps them. `Notice` shows a badge if `urgent`. Wrap each in a `Card`. Filter to urgent-only with a boolean prop on the list later if you have time.
+
+[Back to index](#index)
+
+---
+
+## Day 17
+
+**Topic:** State and events  
+**Goal:** Students can store changing data with `useState`, handle clicks and typing, update arrays without mutating, and lift state to a parent.
+
+Vanilla JS: you changed the DOM, then maybe the array. React: you change **state**; React changes the DOM.
+
+### useState
+
+**`useState`** is a **hook** — a function whose name starts with `use` and that you call **only at the top of a component** (not inside `if` / loops).
+
+```jsx
+import { useState } from "react";
+
+export default function Counter() {
+  const [seats, setSeats] = useState(30);
+
+  return (
+    <p>
+      Seats left: {seats}
+      <button type="button" onClick={() => setSeats(seats - 1)}>
+        Take one
+      </button>
+    </p>
+  );
+}
+```
+
+| Piece | Meaning |
+| --- | --- |
+| `useState(30)` | Start value `30` on first render |
+| `seats` | Current value (read) |
+| `setSeats` | Ask React to store a new value and **render again** |
+| `setSeats(seats - 1)` | Next render uses `29` |
+
+`const [a, b] = useState(...)` is array destructuring. You pick the names.
+
+If the next value depends on the old one, pass a **function** (safe if clicks are fast):
+
+```jsx
+setSeats((n) => n - 1);
+```
+
+Calling `setSeats` with the **same** value does not re-render. State lives as long as the component stays on screen.
+
+**Do not** mutate and reuse the same object (`seats.push` on an array in state). Replace it — next section.
+
+### Events in React
+
+JSX events are **camelCase** and take a **function**, not a string.
+
+```jsx
+button.addEventListener("click", fn);  // Day 12
+<button onClick={fn}>                  // React
+```
+
+```jsx
+function handleSave() {
+  console.log("saved");
+}
+
+<button type="button" onClick={handleSave}>Save</button>
+<button type="button" onClick={() => console.log("hi")}>Hi</button>
+```
+
+Pass the function, do **not** call it: `onClick={handleSave}` not `onClick={handleSave()}`. The `()` runs it **while rendering**.
+
+The event object is still there:
+
+```jsx
+function handleSubmit(event) {
+  event.preventDefault();
+}
+```
+
+```jsx
+<form onSubmit={handleSubmit}>...</form>
+```
+
+Pass a value into a handler with an arrow (common in lists):
+
+```jsx
+<button type="button" onClick={() => onDelete(row.id)}>
+  Remove
+</button>
+```
+
+`type="button"` still matters so a button inside a form does not submit.
+
+### Updating state
+
+Treat state as **immutable**: build a **new** array or object ([Day 11](#array-methods) spread).
+
+```jsx
+const [notices, setNotices] = useState([
+  { id: "n1", title: "Sports day Friday" },
+]);
+
+function handleAdd(title) {
+  setNotices([
+    ...notices,
+    { id: crypto.randomUUID(), title },
+  ]);
+}
+
+function handleRemove(id) {
+  setNotices(notices.filter((row) => row.id !== id));
+}
+
+function handleRename(id, title) {
+  setNotices(
+    notices.map((row) => (row.id === id ? { ...row, title } : row))
+  );
+}
+```
+
+| Goal | Do | Don't |
+| --- | --- | --- |
+| Add | `[...list, item]` | `list.push(item)` |
+| Remove | `list.filter(...)` | `list.splice(...)` |
+| Change one | `list.map` + `{ ...row, ... }` | `list[0].title = ...` |
+
+Objects:
+
+```jsx
+setStudent({ ...student, marks: 80 });
+```
+
+`crypto.randomUUID()` is fine for local ids. Real apps use ids from the database ([Day 20](#how-react-connects-to-node)).
+
+### Controlled inputs
+
+A **controlled** input’s `value` comes from state. Typing calls `onChange` → `setState` → the box shows the new value.
+
+```jsx
+const [name, setName] = useState("");
+
+<label htmlFor="student-name">Name</label>
+<input
+  id="student-name"
+  value={name}
+  onChange={(event) => setName(event.target.value)}
+/>
+```
+
+This is `input` + `.value` from [Day 13](#form-events), with React as the source of truth.
+
+Form submit:
+
+```jsx
+function handleSubmit(event) {
+  event.preventDefault();
+  if (!name.trim()) return;
+  onAdd(name.trim());
+  setName("");
+}
+```
+
+Checkboxes use `checked` + `event.target.checked`. Selects use `value` + `onChange` like text.
+
+Many fields: one object
+
+```jsx
+const [form, setForm] = useState({ name: "", email: "" });
+
+function handleChange(event) {
+  const { name, value } = event.target;
+  setForm({ ...form, [name]: value });
+}
+```
+
+Match `name="email"` to the key. Same `name` idea as HTML forms ([Day 5](#labels-name-and-value)).
+
+### Lifting state
+
+If two children need the same data, **put state in the parent**. Pass the value down, and pass **handlers** down.
+
+```jsx
+function App() {
+  const [notices, setNotices] = useState([]);
+
+  function handleAdd(title) {
+    setNotices([...notices, { id: crypto.randomUUID(), title }]);
+  }
+
+  return (
+    <>
+      <NoticeForm onAdd={handleAdd} />
+      <NoticeList notices={notices} />
+    </>
+  );
+}
+```
+
+```jsx
+function NoticeForm({ onAdd }) {
+  const [title, setTitle] = useState("");
+  // submit → onAdd(title)
+}
+```
+
+```text
+App  (owns notices)
+  NoticeForm   onAdd
+  NoticeList   notices
+```
+
+The form does not own the list. The list does not own the form. **State lives where it is shared.** This is how a later API call in `App` can refresh both.
+
+Naming: `onAdd`, `onDelete` — props that are functions, past tense of the event.
+
+### Day 17 recap
+
+`useState` holds data that changes. `setState` re-renders. Events are `onClick` / `onChange` / `onSubmit` with a function. Copy arrays and objects; do not mutate. Controlled inputs bind `value` to state. Shared data lives in the parent.
+
+Practice: notices app — form adds a title, list shows items, each row has Remove. State in `App`. Extra: an “urgent” checkbox on the form stored on each notice.
+
+[Back to index](#index)
+
+---
+
+## Day 18
+
+**Topic:** Effects and fetching  
+**Goal:** Students can load JSON with `useEffect` + `fetch`, show loading and error states, and cancel work on unmount.
+
+`useState` is for data on screen. **`useEffect`** is for **talking to the world**: network, timers, `localStorage` after paint.
+
+### useEffect
+
+Render should be a **pure** calculation from props + state. Anything else (fetch, `setInterval`, manually touching the DOM) goes in an effect.
+
+```jsx
+import { useEffect, useState } from "react";
+
+useEffect(() => {
+  document.title = `${school} | Portal`;
+}, [school]);
+```
+
+| Piece | Meaning |
+| --- | --- |
+| First argument | Function React runs **after** paint |
+| Second argument | **Dependency array** — when to re-run |
+| `[]` | Run after the first paint only (load once) |
+| `[school]` | Run on first paint and whenever `school` changes |
+| omitted array | Every render — almost never what you want |
+
+**Rules of hooks** (same as `useState`): top level of the component only. Same order every render. Only call hooks from React functions (components or your own hooks on [Day 20](#custom-hooks)).
+
+In **StrictMode** development, React runs effects, cleans up, and runs them again to find bugs. Seeing two `console.log`s in an empty-deps effect is normal. Production runs once.
+
+### Fetching data
+
+Same `fetch` + `async`/`await` as [Day 14](#fetch-and-json). The effect **starts** the request; it cannot be `async` itself (cleanup would break). Define an inner function:
+
+```jsx
+const [students, setStudents] = useState([]);
+
+useEffect(() => {
+  let ignore = false;
+
+  async function load() {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/users"
+    );
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    if (!ignore) {
+      setStudents(data);
+    }
+  }
+
+  load();
+
+  return () => {
+    ignore = true;
+  };
+}, []);
+```
+
+`ignore` stops `setStudents` after the component is gone or after StrictMode’s first fake run. Without it you can get a warning: setState on an unmounted component, or a flicker of stale data.
+
+Map the API fields to what the UI needs (`name`, `email` on that demo API). Later a Node API will return `{ name, section, marks }`.
+
+**Do not** fetch in the component body outside `useEffect` — that would request on every render.
+
+### Loading and error
+
+Three pieces of state are typical:
+
+```jsx
+const [students, setStudents] = useState([]);
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
+```
+
+```jsx
+useEffect(() => {
+  let ignore = false;
+
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const data = await response.json();
+      if (!ignore) {
+        setStudents(data);
+      }
+    } catch (err) {
+      if (!ignore) {
+        setError("Could not load students.");
+        console.error(err);
+      }
+    } finally {
+      if (!ignore) {
+        setLoading(false);
+      }
+    }
+  }
+
+  load();
+  return () => {
+    ignore = true;
+  };
+}, []);
+```
+
+Render with conditionals ([Day 16](#conditional-rendering)):
+
+```jsx
+if (loading) return <p>Loading…</p>;
+if (error) return <p className="error">{error}</p>;
+
+return (
+  <ul>
+    {students.map((row) => (
+      <li key={row.id}>
+        {row.name} — {row.email}
+      </li>
+    ))}
+  </ul>
+);
+```
+
+Always show failure on the **page**, not only in the Console ([Day 14](#fetch-and-json)).
+
+If the URL depends on a prop (`studentId`), put it in the dependency array: `[studentId]`. Changing the id reloads.
+
+### Cleanup
+
+The function **returned** from the effect runs when the component unmounts, and before the effect re-runs.
+
+```jsx
+useEffect(() => {
+  const id = setInterval(() => {
+    console.log("tick");
+  }, 1000);
+
+  return () => {
+    clearInterval(id);
+  };
+}, []);
+```
+
+| You started | Cleanup |
+| --- | --- |
+| `fetch` | `ignore = true` (or `AbortController`) |
+| `setInterval` | `clearInterval` |
+| `addEventListener` | `removeEventListener` |
+| `document.title` | set it back if you need to |
+
+`AbortController` (optional extra):
+
+```jsx
+const controller = new AbortController();
+fetch(url, { signal: controller.signal });
+return () => controller.abort();
+```
+
+Aborted fetch throws; ignore that error if `ignore` / `abort` was your own cleanup.
+
+`localStorage` can live in an effect too (`setItem` when `notices` change). Or do it inside the same handler that calls `setNotices`. Effects are for “after render, sync with something React does not own.”
+
+### Day 18 recap
+
+`useEffect` runs after paint. `[]` means once on mount. Fetch inside the effect with an inner `async` function, `ignore` (or abort) on cleanup, and `loading` / `error` / `data` on screen. StrictMode may run the effect twice in development.
+
+Practice: student list from `jsonplaceholder` `/users`. Show Loading…, then names, or an error if you break the URL on purpose. Extra: a `useEffect` that writes `document.title` to `Students (N)` when the list length changes.
+
+[Back to index](#index)
+
+---
+
+## Day 19
+
+**Topic:** React Router  
+**Goal:** Students can add client-side routes, navigate with `Link`, read URL params, and share a layout with nested routes.
+
+A **SPA** (single-page app) has one `index.html`. The URL still changes so Home and Students feel like pages.
+
+### SPA routes
+
+Install the library (React Router v7; import from `react-router`):
+
+```bash
+npm install react-router
+```
+
+Wrap the tree in `BrowserRouter`. Declare **routes**: URL path → component.
+
+```jsx
+// main.jsx
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
+import App from "./App.jsx";
+import "./index.css";
+
+createRoot(document.getElementById("root")).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>
+);
+```
+
+```jsx
+// App.jsx
+import { Routes, Route } from "react-router";
+import Layout from "./Layout.jsx";
+import Home from "./pages/Home.jsx";
+import Students from "./pages/Students.jsx";
+import Student from "./pages/Student.jsx";
+import NotFound from "./pages/NotFound.jsx";
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="students" element={<Students />} />
+        <Route path="students/:id" element={<Student />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+}
+```
+
+| Piece | Meaning |
+| --- | --- |
+| `BrowserRouter` | Uses the real URL (`/students`) |
+| `Routes` | Pick the matching `Route` |
+| `path="/"` | URL pattern |
+| `element={...}` | Component to show |
+| `index` | Default child for the parent path |
+| `*` | Fallback (404) |
+| `:id` | Dynamic segment ([params](#params-and-navigate)) |
+
+`react-router-dom` still works as a package name; current docs import from `react-router`.
+
+Full page reload (`<a href="/students">`) would ask the server for that path. In dev, Vite can 404. Use **`Link`** next.
+
+### Link and NavLink
+
+```jsx
+import { Link, NavLink } from "react-router";
+
+<nav>
+  <Link to="/">Home</Link>
+  <Link to="/students">Students</Link>
+</nav>
+```
+
+`Link` renders `<a>` but **does not** reload the document. The URL changes; React swaps the page component.
+
+**`NavLink`** is `Link` plus an active class for the current URL — good for the school nav ([Day 8](#flexbox)):
+
+```jsx
+<NavLink
+  to="/students"
+  className={({ isActive }) => (isActive ? "nav-link is-active" : "nav-link")}
+>
+  Students
+</NavLink>
+```
+
+```css
+.nav-link.is-active {
+  font-weight: 700;
+}
+```
+
+Do not mix `href="/students"` on a raw `<a>` for in-app pages. External sites still use `<a href="https://...">`.
+
+### Params and navigate
+
+**`useParams`** reads `:id` from the path.
+
+```jsx
+import { useParams, Link } from "react-router";
+
+export default function Student() {
+  const { id } = useParams();
+
+  return (
+    <article>
+      <h1>Student {id}</h1>
+      <Link to="/students">Back to list</Link>
+    </article>
+  );
+}
+```
+
+List row:
+
+```jsx
+<Link to={`/students/${row.id}`}>{row.name}</Link>
+```
+
+**`useNavigate`** when you must change page from code (after save, after login):
+
+```jsx
+import { useNavigate } from "react-router";
+
+const navigate = useNavigate();
+
+function handleSaved() {
+  navigate("/students");
+}
+
+function handleBack() {
+  navigate(-1);  // browser Back
+}
+```
+
+`useLocation()` gives `pathname` and `search` if you need the current URL.
+
+Query strings (`?section=10-A`) are `useSearchParams` — optional extra. Path params are enough this week.
+
+### Layout routes
+
+A **parent route** renders chrome (header, nav, footer). **`<Outlet />`** is where the child page appears.
+
+```jsx
+import { Outlet, NavLink } from "react-router";
+
+export default function Layout() {
+  return (
+    <div className="app">
+      <header>
+        <p>School Portal</p>
+        <nav>
+          <NavLink to="/" end>
+            Home
+          </NavLink>
+          <NavLink to="/students">Students</NavLink>
+        </nav>
+      </header>
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  );
+}
+```
+
+`end` on the Home `NavLink` so `/students` is not also “active” for `/`.
+
+```text
+/              Layout + Home
+/students      Layout + Students
+/students/7    Layout + Student (id 7)
+/unknown       Layout + NotFound
+```
+
+That matches semantic HTML from [Day 4](#semantic-html): one header/nav, changing `main`.
+
+Put fetch for *one student* in `Student` with `useEffect` and `[id]` ([Day 18](#fetching-data)). Put the list fetch in `Students`.
+
+`createBrowserRouter` + loaders exist for bigger apps. This course uses `BrowserRouter` + `useEffect` so it matches Days 14 and 18. You can switch later.
+
+### Day 19 recap
+
+A SPA changes the URL without a new HTML document. `BrowserRouter` + `Routes` + `Route` pick a page. `Link` / `NavLink` navigate. `:id` + `useParams` read the URL. Nested routes + `Outlet` share a layout. `*` is 404.
+
+Practice: Home, Students list (links to `/students/:id`), Student detail showing the id (or fetched name), NotFound, nav with `NavLink`. Extra: after a fake “Save”, `navigate("/students")`.
+
+[Back to index](#index)
+
+---
+
+## Day 20
+
+**Topic:** Context, custom hooks, and the Node API  
+**Goal:** Students can share data with Context, extract a hook, and `POST`/`GET` JSON to a backend shape they will build in Node.
+
+This day stitches React to the rest of the MERN stack.
+
+### Context
+
+Props drill when many layers need the same value (theme, who is logged in). **Context** lets a parent provide a value to any child without passing props through the middle.
+
+```jsx
+import { createContext, useContext, useState } from "react";
+
+const AuthContext = createContext(null);
+
+export function AuthProvider({ children }) {
+  const [student, setStudent] = useState(null);
+
+  function login(name) {
+    setStudent({ name });
+  }
+
+  function logout() {
+    setStudent(null);
+  }
+
+  return (
+    <AuthContext.Provider value={{ student, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const value = useContext(AuthContext);
+  if (!value) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return value;
+}
+```
+
+Wrap the app (inside `BrowserRouter` is fine):
+
+```jsx
+<BrowserRouter>
+  <AuthProvider>
+    <App />
+  </AuthProvider>
+</BrowserRouter>
+```
+
+```jsx
+function Banner() {
+  const { student, logout } = useAuth();
+  if (!student) return <p>Please log in</p>;
+  return (
+    <p>
+      Hi, {student.name}
+      <button type="button" onClick={logout}>
+        Log out
+      </button>
+    </p>
+  );
+}
+```
+
+| Piece | Job |
+| --- | --- |
+| `createContext` | The “channel” |
+| `Provider value={...}` | What children can read |
+| `useContext` | Read it |
+| `useAuth` | Tiny wrapper so you do not import the raw context everywhere |
+
+**Do not** put the whole student list in context “just because.” Lists that one page owns stay in that page’s `useState`. Context is for **app-wide** facts (auth, theme). Passing props is simpler when only two layers care.
+
+Theme is the same pattern: `{ theme, toggle }` and a `className` on `body` or a wrapper.
+
+### Custom hooks
+
+If you copy the same `useState` + `useEffect` fetch in two pages, extract a **custom hook**: a function that starts with `use` and calls other hooks.
+
+```jsx
+import { useEffect, useState } from "react";
+
+export function useStudents() {
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function load() {
+      try {
+        const response = await fetch("/api/students");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (!ignore) setStudents(data);
+      } catch (err) {
+        if (!ignore) setError("Could not load students.");
+        console.error(err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  return { students, loading, error };
+}
+```
+
+```jsx
+function Students() {
+  const { students, loading, error } = useStudents();
+  // same render as Day 18
+}
+```
+
+Hooks **share logic**, not JSX. Each component that calls `useStudents` gets its **own** state.
+
+`useLocalStorage(key, initial)` is another good lab: `useState` + `useEffect` to `JSON.parse` / `stringify` ([Day 13](#localstorage)).
+
+Rules: still only call hooks at the top. Don’t put `useStudents` behind `if (ready)`.
+
+### How React connects to Node
+
+```text
+React (this week)
+  components, state, useEffect, fetch
+        ↓  HTTP JSON
+Node.js + Express (next)
+  GET  /api/students
+  POST /api/students
+        ↓
+MongoDB (documents that look like your objects)
+```
+
+**GET** — load list (Day 18). **POST** — create, same as Day 14:
+
+```jsx
+async function registerStudent(form) {
+  const response = await fetch("/api/students", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(form),
+  });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.json();
+}
+```
+
+After a successful POST, either:
+
+- `setStudents((list) => [...list, created])` with the object the API returned, or
+- call your load function again
+
+Vite **proxy** (so `/api` hits Node on another port during `npm run dev`):
+
+```js
+// vite.config.js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    proxy: {
+      "/api": "http://localhost:3000",
+    },
+  },
+});
+```
+
+Until Node exists, keep practising against `jsonplaceholder` or a mock array.
+
+CORS is a browser rule: a page on `:5173` cannot read a response from `:3000` unless the server allows it. The proxy avoids that in development. Production: same domain, or Node sets CORS headers.
+
+What stays the same in Node week: objects, arrays, `JSON.stringify`, `async`/`await`, status codes. What changes: the URL is **your** API, and ids come from MongoDB.
+
+### React cheat sheet
+
+| Goal | React |
+| --- | --- |
+| New app | `npm create vite@latest app -- --template react` |
+| Run | `npm run dev` |
+| Mount | `createRoot(...).render(<App />)` |
+| Component | `function Banner() { return <h1>…</h1>; }` |
+| JSX expression | `{name}` |
+| CSS class | `className="card"` |
+| Label | `htmlFor="email"` |
+| Props | `<Notice title={row.title} />` |
+| Wrapper | `function Card({ children })` |
+| If shown | `{urgent && <span>Urgent</span>}` |
+| List | `{rows.map((row) => <Item key={row.id} />)}` |
+| State | `const [n, setN] = useState(0)` |
+| Click | `<button onClick={handleClick}>` |
+| Add to list | `setRows([...rows, item])` |
+| Remove | `setRows(rows.filter((r) => r.id !== id))` |
+| Input | `value={name} onChange={(e) => setName(e.target.value)}` |
+| Form | `onSubmit={handleSubmit}` + `preventDefault` |
+| Effect once | `useEffect(() => { ... }, [])` |
+| Fetch | inner `async` + `ignore` cleanup |
+| Route wrap | `BrowserRouter` in `main.jsx` |
+| Pages | `<Route path="students" element={<Students />} />` |
+| Nav | `<Link to="/students">` / `NavLink` |
+| Param | `const { id } = useParams()` |
+| After save | `navigate("/students")` |
+| Layout | parent `Route` + `<Outlet />` |
+| Shared app data | `createContext` + `Provider` + `useContext` |
+| Reuse logic | `function useSomething() { ... }` |
+| POST JSON | `fetch(url, { method: "POST", headers, body })` |
+
+### Day 20 recap
+
+Context shares app-wide values (auth, theme) without prop drilling. Custom hooks share **logic**. `fetch` GET/POST JSON is how React talks to Node; Vite can proxy `/api` in dev. Keep list state on the page that owns it.
+
+React across Days 15–20 is the **UI** of the MERN app: components, state, effects, routes. Node will be the `/api` you already call.
+
+Practice: `AuthProvider` with a fake login form (name only) and a banner that shows “Hi, Asha”. Extract `useStudents` from Day 18. Extra: `POST` a new user to `https://jsonplaceholder.typicode.com/users` and `console.log` the response (the demo API echoes it).
+
+[Back to index](#index)
+
 
