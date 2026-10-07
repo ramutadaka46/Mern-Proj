@@ -22,12 +22,12 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
 | [Day 12](#day-12) | JS DOM | Select, change, create elements, click events |
 | [Day 13](#day-13) | JS forms and storage | Submit, other events, localStorage, UI patterns |
 | [Day 14](#day-14) | JS async and fetch | Promises, async/await, fetch, JSON, cheat sheet |
-| [Day 15](#day-15) | React basics | What React is, Vite, JSX, function components |
-| [Day 16](#day-16) | React props and lists | Props, children, conditionals, lists, keys |
-| [Day 17](#day-17) | React state | useState, events, immutable updates, controlled inputs |
-| [Day 18](#day-18) | React effects | useEffect, fetch, loading/error, cleanup |
-| [Day 19](#day-19) | React Router | SPA routes, Link, params, layouts |
-| [Day 20](#day-20) | React data flow | Context, custom hooks, Node API, cheat sheet |
+| [Day 15](#day-15) | React basics | Vite, JSX, function and class components, lifecycle |
+| [Day 16](#day-16) | React props and lists | Props, lists, composition, HOC, render props |
+| [Day 17](#day-17) | React state | useState, useReducer, events, controlled and uncontrolled inputs |
+| [Day 18](#day-18) | React effects | useEffect, fetch, useRef, useMemo, useCallback, memo |
+| [Day 19](#day-19) | React Router | SPA routes, params, layouts, protected and lazy routes |
+| [Day 20](#day-20) | React data flow | Context, custom hooks, error boundaries, portals, Node API |
 
 - [Day 1 — Tech overview](#day-1)
   - [HTML](#html)
@@ -145,40 +145,62 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
   - [Day 14 recap](#day-14-recap)
 - [Day 15 — React basics](#day-15)
   - [What React is](#what-react-is)
+  - [One-way data flow](#one-way-data-flow)
   - [Vite and the first app](#vite-and-the-first-app)
   - [Project files](#project-files)
   - [JSX](#jsx)
   - [Function components](#function-components)
+  - [Class components](#class-components)
+  - [Class lifecycle](#class-lifecycle)
+  - [Component types](#component-types)
   - [Day 15 recap](#day-15-recap)
 - [Day 16 — React props and lists](#day-16)
   - [Props](#props)
+  - [PropTypes](#proptypes)
   - [children](#children)
   - [Conditional rendering](#conditional-rendering)
   - [Lists and keys](#lists-and-keys)
   - [Splitting components](#splitting-components)
+  - [Composition](#composition)
+  - [Higher-order components](#higher-order-components)
+  - [Render props](#render-props)
   - [Day 16 recap](#day-16-recap)
 - [Day 17 — React state](#day-17)
   - [useState](#usestate)
+  - [Derived values](#derived-values)
   - [Events in React](#events-in-react)
   - [Updating state](#updating-state)
   - [Controlled inputs](#controlled-inputs)
+  - [useId](#useid)
+  - [Uncontrolled inputs](#uncontrolled-inputs)
   - [Lifting state](#lifting-state)
+  - [useReducer](#usereducer)
   - [Day 17 recap](#day-17-recap)
 - [Day 18 — React effects](#day-18)
   - [useEffect](#useeffect)
+  - [useLayoutEffect](#uselayouteffect)
   - [Fetching data](#fetching-data)
   - [Loading and error](#loading-and-error)
   - [Cleanup](#cleanup)
+  - [useRef](#useref)
+  - [useMemo and useCallback](#usememo-and-usecallback)
+  - [React.memo](#reactmemo)
   - [Day 18 recap](#day-18-recap)
 - [Day 19 — React Router](#day-19)
   - [SPA routes](#spa-routes)
   - [Link and NavLink](#link-and-navlink)
   - [Params and navigate](#params-and-navigate)
+  - [Search params](#search-params)
   - [Layout routes](#layout-routes)
+  - [Protected routes](#protected-routes)
+  - [Lazy routes](#lazy-routes)
   - [Day 19 recap](#day-19-recap)
 - [Day 20 — React data flow](#day-20)
   - [Context](#context)
   - [Custom hooks](#custom-hooks)
+  - [Error boundaries](#error-boundaries)
+  - [Portals](#portals)
+  - [forwardRef](#forwardref)
   - [How React connects to Node](#how-react-connects-to-node)
   - [React cheat sheet](#react-cheat-sheet)
   - [Day 20 recap](#day-20-recap)
@@ -3832,9 +3854,18 @@ Practice: fetch `https://jsonplaceholder.typicode.com/users`, render `name` and 
 ## Day 15
 
 **Topic:** React basics  
-**Goal:** Students can create a Vite React app, explain JSX, and write a function component that shows school-portal content.
+**Goal:** Students can create a Vite React app, explain JSX, and write both a function component and a class component.
 
 React is still JavaScript from Days 9–14. The new idea: **describe the UI**, and React updates the DOM for you.
+
+| Day | You learn |
+| --- | --- |
+| [15](#day-15) | JSX, function components, class components |
+| [16](#day-16) | Props, lists, composition, HOC, render props |
+| [17](#day-17) | `useState`, `useReducer`, forms |
+| [18](#day-18) | `useEffect`, `useRef`, memo |
+| [19](#day-19) | Router, protected routes, lazy pages |
+| [20](#day-20) | Context, custom hooks, error boundaries, portals, the Node API |
 
 ### What React is
 
@@ -3860,6 +3891,19 @@ Component function
 **React Native** (Day 1) is the same component idea for phones. This week is **React for the web**.
 
 Why not keep `querySelector` forever? Big pages become a tangle of listeners and `innerHTML`. React keeps **data in JS** and redraws the view — the pattern from [Day 13](#small-ui-patterns), scaled up.
+
+### One-way data flow
+
+Data moves **down**. Events move **up**.
+
+```text
+state / props  →  JSX  →  screen
+click / submit →  handler in the parent  →  new state
+```
+
+A parent passes values as **props** ([Day 16](#props)). A child asks for a change by calling a function the parent passed (`onDelete`). The child does not reach into the parent’s variables, and the parent does not poke the child’s DOM nodes.
+
+React keeps an in-memory description of the UI (often called the **virtual DOM**). After state changes it **reconciles**: compare the new tree with the previous one, then update only the real DOM nodes that differ. A list **`key`** ([Day 16](#lists-and-keys)) tells that comparison which item is which.
 
 ### Vite and the first app
 
@@ -3921,6 +3965,8 @@ createRoot(document.getElementById("root")).render(
 **StrictMode** (development only) double-checks for unsafe patterns. Effects may run twice in dev — [Day 18](#useeffect). Do not remove it to “fix” that.
 
 `import` / `export` is how files share code ([Day 14](#how-js-connects-to-react-and-node)). One component per file is a good default.
+
+**React DevTools** (browser extension) shows the component tree, props, and state. Use it when `console.log` is not enough to see which component rendered.
 
 ### JSX
 
@@ -4003,15 +4049,132 @@ export default function App() {
 
 `notice()` as a tag would be treated as an HTML element named `notice`. **Capital letter = component.**
 
-Keep components small: one job (a banner, a notice card, a student row). Props and lists are [Day 16](#day-16).
+Keep components small: one job (a banner, a notice card, a student row). Props and lists are [Day 16](#day-16). Hooks (`useState` and the rest) start on [Day 17](#day-17).
 
 Replace the starter counter in `App.jsx` with school-portal markup so you are reading *your* code, not the template.
 
+New code in this course is a **function component**. The next section is the older **class** shape, so you can read existing projects and write an error boundary on [Day 20](#error-boundaries).
+
+### Class components
+
+A **class component** is a class that **extends** React’s `Component` and has a **`render`** method that returns JSX.
+
+```jsx
+import { Component } from "react";
+
+class Notice extends Component {
+  render() {
+    return <p>{this.props.title}</p>;
+  }
+}
+```
+
+| Function | Class |
+| --- | --- |
+| Arguments | `this.props` |
+| `useState` | `this.state` + `this.setState` |
+| Hooks (`useEffect`, …) | Lifecycle methods (next section) |
+| Call it | `<Notice title="Sports day" />` either way |
+
+`this` is the component instance. `constructor` runs once, before the first `render`. Call `super(props)` first.
+
+```jsx
+class SeatCounter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { seats: 30 };
+  }
+
+  handleTake = () => {
+    this.setState((prev) => ({ seats: prev.seats - 1 }));
+  };
+
+  render() {
+    return (
+      <p>
+        Seats left: {this.state.seats}{" "}
+        <button type="button" onClick={this.handleTake}>
+          Take one
+        </button>
+      </p>
+    );
+  }
+}
+```
+
+`setState` **merges** the object you pass into the previous state (`{ seats: 29 }` replaces `seats` and keeps other keys). The function form `this.setState((prev) => ...)` is the same idea as `setSeats((n) => n - 1)` on [Day 17](#usestate).
+
+An **arrow** method (`handleTake = () => {}`) keeps `this` as the component. A normal method loses `this` when you pass it to `onClick`, unless you `.bind(this)` in the constructor. Prefer the arrow.
+
+`state = { seats: 30 }` as a class field (no constructor) is the same starting state. Vite supports it. `defaultProps` on the class is the old way to default a prop; function components use a default parameter ([Day 16](#props)).
+
+You will not mix hooks into a class. Hooks are for functions. Class is for legacy screens and for **error boundaries**.
+
+### Class lifecycle
+
+A class gets messages when it appears, updates, and leaves the screen.
+
+| Moment | Class method | Function equivalent |
+| --- | --- | --- |
+| Created | `constructor` | `useState(initial)` |
+| After first paint | `componentDidMount` | `useEffect(() => {}, [])` |
+| After a later paint | `componentDidUpdate(prevProps, prevState)` | `useEffect` with a dependency array |
+| About to leave | `componentWillUnmount` | the function **returned** from `useEffect` |
+| Render threw | `getDerivedStateFromError` / `componentDidCatch` | no hook — [Day 20](#error-boundaries) |
+
+```jsx
+class StudentList extends Component {
+  state = { students: [] };
+
+  componentDidMount() {
+    document.title = "Students";
+  }
+
+  componentWillUnmount() {
+    document.title = "School Portal";
+  }
+
+  render() {
+    return <p>{this.state.students.length} students</p>;
+  }
+}
+```
+
+Skip `componentWillMount`, `componentWillUpdate`, and any method whose name starts with `UNSAFE_`. They are old and easy to get wrong. Fetch and timers go in `componentDidMount`, and the matching cleanup goes in `componentWillUnmount`. The function version of that pattern is [Day 18](#useeffect).
+
+`render` must stay pure: return JSX from `this.props` and `this.state`. Do not `setState` or `fetch` inside `render` (that loops).
+
+### Component types
+
+“Component” is the general word. These names describe **what job** it has. One component can fit more than one row (a function component that only shows props is presentational).
+
+| Type | Meaning | Where |
+| --- | --- | --- |
+| Function | `function Notice()` returns JSX | This day — default |
+| Class | `class Notice extends Component` | This day — legacy + error boundaries |
+| Presentational | UI from props. Little or no state | `Notice`, `Card` |
+| Container | Owns state or fetch, passes props down | `Students` page, `App` |
+| Controlled | Input value comes from React state | [Day 17](#controlled-inputs) |
+| Uncontrolled | The DOM holds the value; you read it with a ref | [Day 17](#uncontrolled-inputs) |
+| Pure | Skips render when props are the same | [Day 18](#reactmemo) |
+| Higher-order | A function that **returns** a component | [Day 16](#higher-order-components) |
+
+Presentational vs container is a **folder habit**, not a React API:
+
+```text
+components/Notice.jsx     presentational — title in, <article> out
+pages/Students.jsx        container — fetch, then <NoticeList students={...} />
+```
+
+A small component can own its own `useState` (a disclosure toggle). Lift that state only when a sibling needs it ([Day 17](#lifting-state)).
+
 ### Day 15 recap
 
-React is components: functions that return JSX. Vite runs the app (`npm run dev`). JSX looks like HTML with `{ }`, `className`, and a single parent. PascalCase names; `<Notice />` renders the function.
+React describes UI as components and updates the DOM for you. Data flows down as props; events flow up as callbacks. Vite runs the app (`npm run dev`). JSX looks like HTML with `{ }`, `className`, and a single parent.
 
-Practice: scaffold `school-portal` with Vite. In `App.jsx`, render a heading, a short welcome, and two `Notice` components. Add `className` and style it with the CSS you already know. Confirm save-refresh works.
+A **function component** is a PascalCase function that returns JSX. A **class component** extends `Component`, reads `this.props` / `this.state`, and returns JSX from `render`. Lifecycle methods match `useEffect` later. New screens are functions.
+
+Practice: scaffold `school-portal` with Vite. In `App.jsx`, render a heading, a short welcome, and two function `Notice` components. Add a class `SeatCounter` beside them. Style with `className` and the CSS you already know. Confirm save-refresh works, then find both components in React DevTools.
 
 [Back to index](#index)
 
@@ -4019,8 +4182,8 @@ Practice: scaffold `school-portal` with Vite. In `App.jsx`, render a heading, a 
 
 ## Day 16
 
-**Topic:** Props, conditionals, and lists  
-**Goal:** Students can pass data into components, hide/show with `if` or `&&`, and render an array with `map` and a stable `key`.
+**Topic:** Props, lists, and component patterns  
+**Goal:** Students can pass data into components, render a list with a stable `key`, and share behavior with composition, a higher-order component, or a render prop.
 
 This is objects + `map` from [Day 11](#day-11), drawn on screen.
 
@@ -4065,6 +4228,56 @@ function Notice({ title, urgent = false }) {
 ```
 
 Think: HTML attributes in, JS values in `{ }`. The component is a function; props are the parameter object.
+
+### PropTypes
+
+**PropTypes** check props in **development** and print a console warning when a value is missing or the wrong type. They do nothing in a production build. TypeScript (`react-ts`) replaces this later; this course is JavaScript, so PropTypes is the check you can add today.
+
+```bash
+npm install prop-types
+```
+
+```jsx
+import PropTypes from "prop-types";
+
+function Notice({ title, urgent }) {
+  return (
+    <article className={urgent ? "notice is-urgent" : "notice"}>
+      <h2>{title}</h2>
+    </article>
+  );
+}
+
+Notice.propTypes = {
+  title: PropTypes.string.isRequired,
+  urgent: PropTypes.bool,
+};
+```
+
+| Checker | Matches |
+| --- | --- |
+| `PropTypes.string` / `.number` / `.bool` | A primitive |
+| `PropTypes.array` / `.object` | A list or object |
+| `PropTypes.node` | Anything React can render (text, element, fragment) |
+| `PropTypes.element` | One React element |
+| `PropTypes.func` | A callback such as `onDelete` |
+| `.isRequired` | Warning if the prop is `undefined` |
+
+A row shape:
+
+```jsx
+NoticeList.propTypes = {
+  notices: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      urgent: PropTypes.bool,
+    })
+  ).isRequired,
+};
+```
+
+Class components use the same object: `SeatCounter.propTypes = { ... }`. Default values stay on the function parameter (`urgent = false`), not in PropTypes.
 
 ### children
 
@@ -4204,11 +4417,133 @@ import { formatMarks } from "./formatMarks.js";
 
 Keep data (the `notices` array) close to the parent that owns the list. Children receive **one row** as props. State that *changes* the list is [Day 17](#day-17).
 
+### Composition
+
+React builds screens by **composing** components (one renders another). It does not use class inheritance (`class UrgentNotice extends Notice`). A special case is just a component that renders the plain one with extra props:
+
+```jsx
+function UrgentNotice({ title }) {
+  return <Notice title={title} urgent />;
+}
+```
+
+**Slots** are props that hold JSX. `children` is the default slot. Named props are extra slots:
+
+```jsx
+function Panel({ heading, children }) {
+  return (
+    <section className="panel">
+      <header>{heading}</header>
+      <div>{children}</div>
+    </section>
+  );
+}
+
+<Panel heading={<h2>Fees</h2>}>
+  <p>Due 10 Oct.</p>
+</Panel>
+```
+
+The parent picks the inside. The child picks the frame. That is the same idea as [layout routes](#layout-routes) later (`<Outlet />` is a slot for the page).
+
+Prefer composition when you are tempted to subclass a component. Share **JSX** by rendering it. Share **logic** with a custom hook ([Day 20](#custom-hooks)), an HOC, or a render prop.
+
+### Higher-order components
+
+A **higher-order component** (HOC) is a function that **takes a component and returns a component**. It is not a hook and not a component you put in JSX by itself.
+
+```jsx
+function withLoading(Wrapped) {
+  function LoadingView({ loading, ...rest }) {
+    if (loading) return <p>Loading…</p>;
+    return <Wrapped {...rest} />;
+  }
+
+  const name = Wrapped.displayName || Wrapped.name || "Component";
+  LoadingView.displayName = `withLoading(${name})`;
+  return LoadingView;
+}
+
+function StudentTable({ students }) {
+  return (
+    <ul>
+      {students.map((row) => (
+        <li key={row.id}>{row.name}</li>
+      ))}
+    </ul>
+  );
+}
+
+const StudentTableWithLoading = withLoading(StudentTable);
+```
+
+```jsx
+<StudentTableWithLoading loading={loading} students={students} />
+```
+
+`{...rest}` forwards every prop except `loading`. The wrapper owns the “if loading, show text” behavior. `StudentTable` only draws rows.
+
+| Rule | Why |
+| --- | --- |
+| Return a **new** component | Do not edit `Wrapped` (`Wrapped.loading = true` leaks into every use) |
+| Forward props you do not use | `{...rest}` so `students` still arrives |
+| Set `displayName` | React DevTools shows `withLoading(StudentTable)` instead of `LoadingView` |
+| Call the HOC **outside** render | `withLoading(StudentTable)` at module scope. Calling it inside `App` makes a new component type every render and resets state |
+| Stack from the inside | `withAuth(withLoading(Page))` — `withLoading` wraps `Page`, then `withAuth` wraps that |
+
+Hooks copy logic without wrapping the JSX. HOCs are still how older libraries inject props (Redux `connect` was an HOC). A login wrapper (`withAuth`) fits once context exists — [Day 20](#context). For a route guard, a small wrapper component is usually clearer ([Day 19](#protected-routes)).
+
+### Render props
+
+A **render prop** is a prop whose value is a **function that returns JSX**. The child owns the behavior and asks the parent what to draw.
+
+```jsx
+function List({ items, renderItem }) {
+  if (items.length === 0) return <p>Nothing here yet.</p>;
+
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item.id}>{renderItem(item)}</li>
+      ))}
+    </ul>
+  );
+}
+
+<List
+  items={notices}
+  renderItem={(row) => <Notice title={row.title} urgent={row.urgent} />}
+/>
+```
+
+`children` can be that function too:
+
+```jsx
+function Repeat({ times, children }) {
+  return Array.from({ length: times }, (_, index) => (
+    <div key={index}>{children(index)}</div>
+  ));
+}
+
+<Repeat times={3}>{(index) => <Notice title={`Period ${index + 1}`} />}</Repeat>
+```
+
+| Pattern | Who returns the JSX | Typical use |
+| --- | --- | --- |
+| `children` as elements | Parent writes the inside | Card, layout |
+| Render prop / `children` as a function | Parent writes the inside, child passes data into it | List, toggle, mouse position |
+| HOC | Wrapper returns the wrapped component | Inject `loading`, auth, data as **props** |
+| Custom hook | Nobody — it returns data | Share `useState` + `useEffect` ([Day 20](#custom-hooks)) |
+
+New code usually prefers a hook plus a normal component. Learn render props and HOCs so library code and older projects are readable. Both are still composition: a function building UI from another function.
+
 ### Day 16 recap
 
-Props are arguments. `children` is nested JSX. `&&` / ternary / `if` pick what to show. `.map` builds lists; **`key` is a stable id**. Split files when a component has a clear name.
+Props are arguments. PropTypes warn in development when a prop has the wrong shape. `children` is nested JSX. `&&` / ternary / `if` pick what to show. `.map` builds lists; **`key` is a stable id**.
 
-Practice: `notices` array of 4 objects (`id`, `title`, `urgent`). `NoticeList` maps them. `Notice` shows a badge if `urgent`. Wrap each in a `Card`. Filter to urgent-only with a boolean prop on the list later if you have time.
+Compose screens by rendering components, not by subclassing them. An **HOC** wraps a component to add behavior. A **render prop** is a function prop that returns JSX.
+
+Practice: `notices` array of 4 objects (`id`, `title`, `urgent`). `NoticeList` maps them. `Notice` shows a badge if `urgent`, with PropTypes on `title`. Wrap the list with `withLoading`. Draw the same rows through `<List renderItem={...} />`.
 
 [Back to index](#index)
 
@@ -4217,7 +4552,7 @@ Practice: `notices` array of 4 objects (`id`, `title`, `urgent`). `NoticeList` m
 ## Day 17
 
 **Topic:** State and events  
-**Goal:** Students can store changing data with `useState`, handle clicks and typing, update arrays without mutating, and lift state to a parent.
+**Goal:** Students can store changing data with `useState` or `useReducer`, handle clicks and typing, update arrays without mutating, and choose a controlled or uncontrolled input.
 
 Vanilla JS: you changed the DOM, then maybe the array. React: you change **state**; React changes the DOM.
 
@@ -4259,7 +4594,37 @@ setSeats((n) => n - 1);
 
 Calling `setSeats` with the **same** value does not re-render. State lives as long as the component stays on screen.
 
-**Do not** mutate and reuse the same object (`seats.push` on an array in state). Replace it — next section.
+Several `set` calls in **one** event handler become one re-render (**batching**):
+
+```jsx
+setName("Asha");
+setEmail("asha@school.test");
+```
+
+Unrelated values get their own `useState` (`seats` and `name`). Fields that always change together can share one object (a form, below).
+
+**Do not** mutate and reuse the same object (`seats.push` on an array in state). Replace it — [Updating state](#updating-state).
+
+### Derived values
+
+If you can **calculate** it from props or state during render, it is not state.
+
+```jsx
+function Result({ marks }) {
+  const passed = marks >= 40;
+  return <p>{passed ? "Pass" : "Fail"}</p>;
+}
+```
+
+`useState(marks >= 40)` plus an effect to keep it in sync goes stale the moment `marks` changes. Compute `passed` on each render instead.
+
+Same for a filtered list you only display:
+
+```jsx
+const visible = urgentOnly ? notices.filter((row) => row.urgent) : notices;
+```
+
+Store `notices` and `urgentOnly`. `visible` is derived. Reach for `useMemo` only when that calculation is expensive ([Day 18](#usememo-and-usecallback)).
 
 ### Events in React
 
@@ -4281,7 +4646,7 @@ function handleSave() {
 
 Pass the function, do **not** call it: `onClick={handleSave}` not `onClick={handleSave()}`. The `()` runs it **while rendering**.
 
-The event object is still there:
+The event object is still there. React hands you its own event object with the same `preventDefault`, `target`, and `currentTarget` as [Day 12](#click-events). Read them inside the handler.
 
 ```jsx
 function handleSubmit(event) {
@@ -4387,6 +4752,68 @@ function handleChange(event) {
 
 Match `name="email"` to the key. Same `name` idea as HTML forms ([Day 5](#labels-name-and-value)).
 
+Prefer `setForm((form) => ({ ...form, [name]: value }))` so a fast second keystroke cannot overwrite the first with a stale `form`.
+
+### useId
+
+**`useId`** returns a string that is unique for this component instance. Use it when a reusable field must connect a `<label>` to an `<input>` and you do not want to invent ids by hand.
+
+```jsx
+import { useId } from "react";
+
+function TextField({ label, value, onChange }) {
+  const id = useId();
+
+  return (
+    <>
+      <label htmlFor={id}>{label}</label>
+      <input id={id} value={value} onChange={onChange} />
+    </>
+  );
+}
+```
+
+Two `<TextField />`s get two different ids. Do not use `useId` as a list `key` or as a database id — it is only for accessibility attributes in the HTML.
+
+### Uncontrolled inputs
+
+A **controlled** input’s value lives in React. An **uncontrolled** input keeps the value in the DOM, like a plain HTML form. You read it when you need it, through a **ref**.
+
+```jsx
+import { useRef } from "react";
+
+function SearchForm({ onSearch }) {
+  const queryRef = useRef(null);
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const query = queryRef.current.value.trim();
+    if (!query) return;
+    onSearch(query);
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input ref={queryRef} defaultValue="" placeholder="Find a student" />
+      <button type="submit">Search</button>
+    </form>
+  );
+}
+```
+
+| | Controlled | Uncontrolled |
+| --- | --- | --- |
+| Value | `value={name}` from state | Whatever the user typed, in the DOM |
+| Change | `onChange` updates state every keystroke | Read `ref.current.value` on submit |
+| Starting text | `useState("Asha")` | `defaultValue="Asha"` |
+| Clear the box | `setName("")` | `queryRef.current.value = ""` |
+
+`ref={queryRef}` puts the DOM node on `queryRef.current` after paint. Before that, `current` is `null`. `useRef` does **not** re-render when `.current` changes. More uses (timers, previous value) are on [Day 18](#useref). Passing a ref **into** a custom component is [Day 20](#forwardref).
+
+Use controlled inputs when the screen must react while typing (a character count, a disabled submit button, filtering a list). Use uncontrolled when you only need the text at submit time.
+
+A file input is uncontrolled: `<input type="file" ref={fileRef} />`, then `fileRef.current.files[0]`.
+
 ### Lifting state
 
 If two children need the same data, **put state in the parent**. Pass the value down, and pass **handlers** down.
@@ -4425,11 +4852,94 @@ The form does not own the list. The list does not own the form. **State lives wh
 
 Naming: `onAdd`, `onDelete` — props that are functions, past tense of the event.
 
+### useReducer
+
+**`useReducer`** is `useState` when the next value depends on **what happened**, not just on a new number. You write a **reducer**: `(state, action) => nextState`. The component **dispatches** an action object.
+
+```jsx
+import { useReducer } from "react";
+
+function noticesReducer(state, action) {
+  switch (action.type) {
+    case "add":
+      return [
+        ...state,
+        { id: crypto.randomUUID(), title: action.title, urgent: false },
+      ];
+    case "remove":
+      return state.filter((row) => row.id !== action.id);
+    case "toggleUrgent":
+      return state.map((row) =>
+        row.id === action.id ? { ...row, urgent: !row.urgent } : row
+      );
+    default:
+      return state;
+  }
+}
+
+export default function NoticeBoard() {
+  const [notices, dispatch] = useReducer(noticesReducer, []);
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => dispatch({ type: "add", title: "PTM 10 Oct" })}
+      >
+        Add notice
+      </button>
+      <ul>
+        {notices.map((row) => (
+          <li key={row.id}>
+            {row.title}
+            <button
+              type="button"
+              onClick={() => dispatch({ type: "toggleUrgent", id: row.id })}
+            >
+              {row.urgent ? "Urgent" : "Mark urgent"}
+            </button>
+            <button
+              type="button"
+              onClick={() => dispatch({ type: "remove", id: row.id })}
+            >
+              Remove
+            </button>
+          </li>
+        ))}
+      </ul>
+    </>
+  );
+}
+```
+
+| Piece | Meaning |
+| --- | --- |
+| `noticesReducer` | Pure function. Same state + same action → same next state. No `fetch` inside it |
+| `action.type` | A string name for the event (`"add"`, `"remove"`) |
+| `action.title` / `action.id` | Extra data for that event |
+| `dispatch` | Send an action. React runs the reducer and re-renders |
+| `useReducer(reducer, [])` | Reducer, then the **initial state** |
+| `default` | Return the current state for an unknown type |
+
+The reducer must return a **new** array or object, same rules as [Updating state](#updating-state). `dispatch` is stable, so you can pass it to children instead of a handful of `handleAdd` / `handleRemove` functions.
+
+| Choose | When |
+| --- | --- |
+| `useState` | One or two independent values, or a small form |
+| `useReducer` | Several updates to the **same** data (`add`, `remove`, `toggle`, `rename`) |
+| Either | Both are state. Both re-render. Pick the one that keeps the update rules in one place |
+
+A third argument initializes from props once: `useReducer(reducer, studentId, createInitial)`. The function runs on the first render only. You rarely need it this week.
+
+`useState` is implemented with the same idea. Class `this.setState` is the older spelling. Context on [Day 20](#context) often stores `dispatch` next to the state so any screen can send an action.
+
 ### Day 17 recap
 
-`useState` holds data that changes. `setState` re-renders. Events are `onClick` / `onChange` / `onSubmit` with a function. Copy arrays and objects; do not mutate. Controlled inputs bind `value` to state. Shared data lives in the parent.
+`useState` holds data that changes. `setState` re-renders, and several sets in one handler batch into one render. If a value can be calculated, derive it during render. Events are `onClick` / `onChange` / `onSubmit` with a function. Copy arrays and objects; do not mutate.
 
-Practice: notices app — form adds a title, list shows items, each row has Remove. State in `App`. Extra: an “urgent” checkbox on the form stored on each notice.
+Controlled inputs bind `value` to state. Uncontrolled inputs keep the value in the DOM and read it with `useRef`. `useId` wires a label to an input. Shared data lives in the parent. `useReducer` + `dispatch` fits when one piece of state has many named updates.
+
+Practice: notices app — form adds a title, list shows items, each row has Remove. State in `App`, then rewrite add/remove/toggle with `useReducer`. Extra: an uncontrolled search box (`useRef`) that filters the list on submit, and `useId` on the title field.
 
 [Back to index](#index)
 
@@ -4437,8 +4947,8 @@ Practice: notices app — form adds a title, list shows items, each row has Remo
 
 ## Day 18
 
-**Topic:** Effects and fetching  
-**Goal:** Students can load JSON with `useEffect` + `fetch`, show loading and error states, and cancel work on unmount.
+**Topic:** Effects, refs, and memo  
+**Goal:** Students can load JSON with `useEffect` + `fetch`, show loading and error states, cancel work on unmount, store a mutable value in `useRef`, and skip extra renders with `memo`.
 
 `useState` is for data on screen. **`useEffect`** is for **talking to the world**: network, timers, `localStorage` after paint.
 
@@ -4464,7 +4974,28 @@ useEffect(() => {
 
 **Rules of hooks** (same as `useState`): top level of the component only. Same order every render. Only call hooks from React functions (components or your own hooks on [Day 20](#custom-hooks)).
 
+List every value from the component that the effect reads (`school`, `studentId`, a function defined in the component). Leave one out and the effect keeps a **stale** value. Extra entries re-run the effect too often.
+
+These are the same moments as class `componentDidMount` / `componentDidUpdate` / `componentWillUnmount` ([Day 15](#class-lifecycle)).
+
 In **StrictMode** development, React runs effects, cleans up, and runs them again to find bugs. Seeing two `console.log`s in an empty-deps effect is normal. Production runs once.
+
+### useLayoutEffect
+
+**`useLayoutEffect`** has the same shape: effect function, dependency array, optional cleanup. It runs after React updates the DOM and **before** the browser paints.
+
+```jsx
+import { useLayoutEffect, useRef, useState } from "react";
+
+const boxRef = useRef(null);
+const [width, setWidth] = useState(0);
+
+useLayoutEffect(() => {
+  setWidth(boxRef.current.offsetWidth);
+}, []);
+```
+
+Use it when you must **measure** layout (a menu’s height, a tooltip’s position) and set state before the user sees a flash of the wrong size. Fetching, timers, and `document.title` stay in `useEffect`. If you are unsure, use `useEffect`.
 
 ### Fetching data
 
@@ -4606,11 +5137,136 @@ Aborted fetch throws; ignore that error if `ignore` / `abort` was your own clean
 
 `localStorage` can live in an effect too (`setItem` when `notices` change). Or do it inside the same handler that calls `setNotices`. Effects are for “after render, sync with something React does not own.”
 
+### useRef
+
+**`useRef(initial)`** returns `{ current: initial }`. Changing `.current` does **not** re-render. The same object survives every render.
+
+You already used it to read an uncontrolled input ([Day 17](#uncontrolled-inputs)). Two more jobs:
+
+**A DOM node** you need after paint (focus, measure):
+
+```jsx
+const inputRef = useRef(null);
+
+useEffect(() => {
+  inputRef.current.focus();
+}, []);
+
+<input ref={inputRef} />
+```
+
+**A mutable box** for an id, a previous value, or a flag that handlers must see without going through state:
+
+```jsx
+function SeatTimer() {
+  const [seats, setSeats] = useState(30);
+  const timerId = useRef(null);
+
+  function handleStart() {
+    if (timerId.current) return;
+    timerId.current = setInterval(() => {
+      setSeats((n) => n - 1);
+    }, 1000);
+  }
+
+  function handleStop() {
+    clearInterval(timerId.current);
+    timerId.current = null;
+  }
+
+  useEffect(() => {
+    return () => clearInterval(timerId.current);
+  }, []);
+
+  return (
+    <p>
+      Seats left: {seats}
+      <button type="button" onClick={handleStart}>Start</button>
+      <button type="button" onClick={handleStop}>Stop</button>
+    </p>
+  );
+}
+```
+
+Previous value (state only knows “now”):
+
+```jsx
+const prevSeats = useRef(seats);
+
+useEffect(() => {
+  prevSeats.current = seats;
+}, [seats]);
+```
+
+| | `useState` | `useRef` |
+| --- | --- | --- |
+| Changing it | Re-renders | No re-render |
+| Read it in JSX | `{seats}` | Rarely — the screen will not update |
+| Typical value | What the user sees | DOM node, timer id, previous props |
+
+Do not put `timerId.current` in the dependency array and expect the effect to re-run when you assign it. Refs are invisible to rendering. If the screen must show the value, it belongs in state.
+
+### useMemo and useCallback
+
+Every render, the function runs from the top: filters, new object literals, and new `function handleRemove` are created again. That is cheap until the work is heavy or a memoized child re-renders because it received a new function.
+
+**`useMemo`** caches a **calculated value**. **`useCallback`** caches a **function**. Both take a dependency array, same rules as `useEffect`.
+
+```jsx
+import { useCallback, useMemo, useState } from "react";
+
+const visible = useMemo(() => {
+  return notices.filter((row) => (urgentOnly ? row.urgent : true));
+}, [notices, urgentOnly]);
+
+const handleRemove = useCallback((id) => {
+  setNotices((list) => list.filter((row) => row.id !== id));
+}, []);
+```
+
+`visible` is recomputed when `notices` or `urgentOnly` changes. `handleRemove` is the same function every render because it uses the functional `setNotices` and needs nothing else in the array.
+
+| Hook | Caches | Use when |
+| --- | --- | --- |
+| `useMemo(fn, deps)` | The **return value** of `fn` | An expensive filter/sort, or an object you pass to a memoized child |
+| `useCallback(fn, deps)` | The **function** `fn` | You pass a handler to a child wrapped in `memo`, or put a function in an effect’s deps |
+
+Skip them on a normal school-portal list. A derived `const visible = notices.filter(...)` during render is easier to read ([Day 17](#derived-values)). Add memo when React DevTools shows a slow component rendering on unrelated state (a text field re-filtering thousands of rows).
+
+`useMemo` is not a place to hide side effects. Fetch stays in `useEffect`.
+
+### React.memo
+
+**`memo`** wraps a component so it **skips rendering** when its props are the same as last time (shallow compare: primitives by value, objects by reference).
+
+```jsx
+import { memo } from "react";
+
+const Notice = memo(function Notice({ title, urgent, onRemove }) {
+  return (
+    <article className={urgent ? "notice is-urgent" : "notice"}>
+      <h2>{title}</h2>
+      <button type="button" onClick={onRemove}>Remove</button>
+    </article>
+  );
+});
+```
+
+If the parent passes `onRemove={() => dispatch({ type: "remove", id })}` inline, that is a **new** function every render, so `memo` never bails out. Pair it with `useCallback`, or pass `dispatch` (it is stable) and the `id`.
+
+A new object prop (`style={{ color: "navy" }}`) has the same problem. Pass a string `className` instead.
+
+The class version is **`PureComponent`**: `class Notice extends PureComponent` shallow-compares `this.props` and `this.state`. Function components use `memo`. Both are the “pure” row from [Day 15](#component-types).
+
+`memo` compares props only. It does not stop a context update ([Day 20](#context)) from re-rendering the component if it calls `useContext`.
+
 ### Day 18 recap
 
-`useEffect` runs after paint. `[]` means once on mount. Fetch inside the effect with an inner `async` function, `ignore` (or abort) on cleanup, and `loading` / `error` / `data` on screen. StrictMode may run the effect twice in development.
+`useEffect` runs after paint. `[]` means once on mount. `useLayoutEffect` runs before paint when you must measure the DOM. Fetch inside the effect with an inner `async` function, `ignore` (or abort) on cleanup, and `loading` / `error` / `data` on screen. StrictMode may run the effect twice in development.
 
-Practice: student list from `jsonplaceholder` `/users`. Show Loading…, then names, or an error if you break the URL on purpose. Extra: a `useEffect` that writes `document.title` to `Students (N)` when the list length changes.
+`useRef` holds a DOM node or any mutable `.current` without rendering. `useMemo` caches a value, `useCallback` caches a function, and `memo` / `PureComponent` skip a render when props are unchanged.
+
+Practice: student list from `jsonplaceholder` `/users`. Show Loading…, then names, or an error if you break the URL on purpose. Focus a search input with `useRef` on mount. Extra: `document.title` as `Students (N)`, and wrap one row component in `memo`.
 
 [Back to index](#index)
 
@@ -4619,7 +5275,7 @@ Practice: student list from `jsonplaceholder` `/users`. Show Loading…, then na
 ## Day 19
 
 **Topic:** React Router  
-**Goal:** Students can add client-side routes, navigate with `Link`, read URL params, and share a layout with nested routes.
+**Goal:** Students can add client-side routes, navigate with `Link`, read URL params and search params, share a layout, protect a page, and lazy-load a route.
 
 A **SPA** (single-page app) has one `index.html`. The URL still changes so Home and Students feel like pages.
 
@@ -4760,9 +5416,39 @@ function handleBack() {
 }
 ```
 
-`useLocation()` gives `pathname` and `search` if you need the current URL.
+`useLocation()` gives `pathname`, `search`, and `state` if you need the current URL. `navigate("/students", { state: { from: "save" } })` attaches data that does not appear in the URL; the next page reads `useLocation().state`.
 
-Query strings (`?section=10-A`) are `useSearchParams` — optional extra. Path params are enough this week.
+### Search params
+
+A **path param** (`/students/7`) identifies one record. A **search param** (`?section=10-A`) is a filter or a flag on a list page. It survives refresh and can be shared as a link.
+
+```jsx
+import { useSearchParams } from "react-router";
+
+export default function Students() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const section = searchParams.get("section") ?? "all";
+
+  function handleSection(next) {
+    if (next === "all") {
+      setSearchParams({});
+      return;
+    }
+    setSearchParams({ section: next });
+  }
+
+  return (
+    <>
+      <button type="button" onClick={() => handleSection("10-A")}>
+        10-A
+      </button>
+      <p>Showing {section}</p>
+    </>
+  );
+}
+```
+
+`searchParams.get("section")` is a string or `null`. The URL becomes `/students?section=10-A` without a full page load. Put `section` in a `useEffect` dependency array if the fetch depends on it.
 
 ### Layout routes
 
@@ -4806,11 +5492,68 @@ Put fetch for *one student* in `Student` with `useEffect` and `[id]` ([Day 18](#
 
 `createBrowserRouter` + loaders exist for bigger apps. This course uses `BrowserRouter` + `useEffect` so it matches Days 14 and 18. You can switch later.
 
+### Protected routes
+
+Some URLs should render only when the student is logged in. A **wrapper component** checks that and otherwise redirects. Today the flag can be `useState` in `App`. Tomorrow the same component reads context ([Day 20](#context)).
+
+```jsx
+import { Navigate } from "react-router";
+
+function Protected({ isLoggedIn, children }) {
+  if (!isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
+```
+
+```jsx
+<Route
+  path="students"
+  element={
+    <Protected isLoggedIn={Boolean(student)}>
+      <Students />
+    </Protected>
+  }
+/>
+```
+
+`Navigate` changes the URL as soon as it renders. `replace` means Back does not return to the page they were denied. This is composition ([Day 16](#composition)), not an HOC. `withAuth` is the same check written as a wrapper function — shown with context on [Day 20](#context).
+
+### Lazy routes
+
+**`lazy`** loads a page’s JavaScript only when the user opens that URL. **`Suspense`** shows a fallback while that file downloads.
+
+```jsx
+import { lazy, Suspense } from "react";
+import { Routes, Route } from "react-router";
+
+const Students = lazy(() => import("./pages/Students.jsx"));
+const Student = lazy(() => import("./pages/Student.jsx"));
+
+export default function App() {
+  return (
+    <Suspense fallback={<p>Loading page…</p>}>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="students" element={<Students />} />
+          <Route path="students/:id" element={<Student />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+The lazy file must have a **default export** (`export default function Students`). Keep `Layout` and `Home` eager so the first paint does not wait on every page. The fallback is the same idea as the loading text in [Day 18](#loading-and-error), for code instead of JSON.
+
 ### Day 19 recap
 
-A SPA changes the URL without a new HTML document. `BrowserRouter` + `Routes` + `Route` pick a page. `Link` / `NavLink` navigate. `:id` + `useParams` read the URL. Nested routes + `Outlet` share a layout. `*` is 404.
+A SPA changes the URL without a new HTML document. `BrowserRouter` + `Routes` + `Route` pick a page. `Link` / `NavLink` navigate. `:id` + `useParams` read a record. `useSearchParams` reads filters like `?section=10-A`. Nested routes + `Outlet` share a layout. `Protected` + `Navigate` guard a page. `lazy` + `Suspense` load a page when it is opened. `*` is 404.
 
-Practice: Home, Students list (links to `/students/:id`), Student detail showing the id (or fetched name), NotFound, nav with `NavLink`. Extra: after a fake “Save”, `navigate("/students")`.
+Practice: Home, Students list (links to `/students/:id`), Student detail, NotFound, nav with `NavLink`. Filter the list with `?section=`. Guard `/students` with `Protected`. Lazy-load the detail page. Extra: after a fake “Save”, `navigate("/students")`.
 
 [Back to index](#index)
 
@@ -4818,8 +5561,8 @@ Practice: Home, Students list (links to `/students/:id`), Student detail showing
 
 ## Day 20
 
-**Topic:** Context, custom hooks, and the Node API  
-**Goal:** Students can share data with Context, extract a hook, and `POST`/`GET` JSON to a backend shape they will build in Node.
+**Topic:** Context, boundaries, and the Node API  
+**Goal:** Students can share data with Context, extract a hook, catch a render error, open a modal through a portal, pass a ref into a child, and `POST`/`GET` JSON to a backend they will build in Node.
 
 This day stitches React to the rest of the MERN stack.
 
@@ -4895,6 +5638,20 @@ function Banner() {
 
 Theme is the same pattern: `{ theme, toggle }` and a `className` on `body` or a wrapper.
 
+**HOC plus context.** [Day 16](#higher-order-components) `withLoading` only looked at props. The same wrapper can read context:
+
+```jsx
+function withAuth(Wrapped) {
+  return function AuthGuard(props) {
+    const { student } = useAuth();
+    if (!student) return <p>Please log in</p>;
+    return <Wrapped {...props} student={student} />;
+  };
+}
+```
+
+Call `withAuth(Students)` **once**, at module scope, not inside `App`. A [protected route](#protected-routes) is usually clearer for pages. Both show up in real code (older Redux `connect` was an HOC). `memo` does not block a context update: if `Banner` calls `useAuth`, it re-renders when `student` changes ([Day 18](#reactmemo)).
+
 ### Custom hooks
 
 If you copy the same `useState` + `useEffect` fetch in two pages, extract a **custom hook**: a function that starts with `use` and calls other hooks.
@@ -4946,6 +5703,157 @@ Hooks **share logic**, not JSX. Each component that calls `useStudents` gets its
 `useLocalStorage(key, initial)` is another good lab: `useState` + `useEffect` to `JSON.parse` / `stringify` ([Day 13](#localstorage)).
 
 Rules: still only call hooks at the top. Don’t put `useStudents` behind `if (ready)`.
+
+A custom hook replaces an HOC when the shared part is **data** (`useStudents`, `useAuth`). An HOC or a wrapper component still fits when the shared part is **JSX** (a loading message, a login redirect).
+
+### Error boundaries
+
+A render error (reading `.name` of `undefined` during render) unmounts the whole tree and shows a blank page. An **error boundary** is a class component that catches that and shows a fallback. There is still no hook for this — it is the main reason class components stay in a function-component app ([Day 15](#class-lifecycle)).
+
+```jsx
+import { Component } from "react";
+
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, info) {
+    console.error(error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <p className="error">Something went wrong. Reload the page.</p>;
+    }
+    return this.props.children;
+  }
+}
+```
+
+```jsx
+<ErrorBoundary>
+  <Student />
+</ErrorBoundary>
+```
+
+| Caught by the boundary | Not caught — use `try/catch` |
+| --- | --- |
+| Throw during **render** | Event handlers (`onClick`) |
+| Lifecycle methods | `async` code and `fetch` |
+| Constructors of children | Errors inside the boundary itself |
+
+Put a boundary around a **route page**, not only at the root, so one broken student page does not take down the nav. `componentDidCatch` is where a real app would report the error. Reset `hasError` when the route `id` changes if you want a new page to try again (`componentDidUpdate` comparing `prevProps`).
+
+### Portals
+
+A **portal** renders JSX into a DOM node **outside** the parent’s HTML, while React still treats it as a child (events bubble through React’s tree, context still works).
+
+Modals and tooltips need this so `overflow: hidden` or a low `z-index` on a card cannot clip them.
+
+```jsx
+import { useState } from "react";
+import { createPortal } from "react-dom";
+
+function ConfirmDialog({ children, onClose }) {
+  return createPortal(
+    <div className="modal-backdrop" onClick={onClose}>
+      <div
+        className="modal"
+        role="dialog"
+        onClick={(event) => event.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function Notice({ title, onDelete }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <article>
+      <h2>{title}</h2>
+      <button type="button" onClick={() => setOpen(true)}>
+        Remove
+      </button>
+      {open && (
+        <ConfirmDialog onClose={() => setOpen(false)}>
+          <p>Remove this notice?</p>
+          <button type="button" onClick={onDelete}>
+            Yes
+          </button>
+        </ConfirmDialog>
+      )}
+    </article>
+  );
+}
+```
+
+`document.body` is a fine target. A dedicated `<div id="modal-root">` next to `#root` in `index.html` is the same idea if you want modals grouped in DevTools. Style `.modal-backdrop` with `position: fixed` and a high `z-index` (Days 7–8).
+
+The dialog is still a child of `Notice` for context and for the click handler. Only the **DOM location** moved.
+
+### forwardRef
+
+A `ref` on a host element (`<input ref={queryRef} />`) points at that DOM node ([Day 17](#uncontrolled-inputs)). A `ref` on **your** component does not, unless you opt in. The parent wants to focus an input that lives inside `TextField`.
+
+In **React 19**, `ref` is a normal prop:
+
+```jsx
+import { useId, useRef } from "react";
+
+function TextField({ label, ref }) {
+  const id = useId();
+
+  return (
+    <>
+      <label htmlFor={id}>{label}</label>
+      <input id={id} ref={ref} />
+    </>
+  );
+}
+
+function RegisterForm() {
+  const nameRef = useRef(null);
+
+  return (
+    <form>
+      <TextField label="Name" ref={nameRef} />
+      <button type="button" onClick={() => nameRef.current.focus()}>
+        Focus name
+      </button>
+    </form>
+  );
+}
+```
+
+Older code (and React 18) uses **`forwardRef`**. You will see it in libraries. It still works:
+
+```jsx
+import { forwardRef, useId } from "react";
+
+const TextField = forwardRef(function TextField({ label }, ref) {
+  const id = useId();
+  return (
+    <>
+      <label htmlFor={id}>{label}</label>
+      <input id={id} ref={ref} />
+    </>
+  );
+});
+```
+
+`useImperativeHandle` (rare) customizes what the parent gets instead of the raw DOM node — for example a `{ focus() {} }` object. Prefer the DOM node until a library forces the extra API.
+
+Do not forward a ref just to read a child’s state. Pass a callback prop, or lift the state.
 
 ### How React connects to Node
 
@@ -5011,7 +5919,6 @@ What stays the same in Node week: objects, arrays, `JSON.stringify`, `async`/`aw
 | New app | `npm create vite@latest app -- --template react` |
 | Run | `npm run dev` |
 | Mount | `createRoot(...).render(<App />)` |
-| Component | `function Banner() { return <h1>…</h1>; }` |
 | JSX expression | `{name}` |
 | CSS class | `className="card"` |
 | Label | `htmlFor="email"` |
@@ -5019,31 +5926,53 @@ What stays the same in Node week: objects, arrays, `JSON.stringify`, `async`/`aw
 | Wrapper | `function Card({ children })` |
 | If shown | `{urgent && <span>Urgent</span>}` |
 | List | `{rows.map((row) => <Item key={row.id} />)}` |
+| Function component | `function Banner() { return <h1>…</h1>; }` |
+| Class component | `class Banner extends Component { render() { … } }` |
 | State | `const [n, setN] = useState(0)` |
+| Derived | `const passed = marks >= 40` during render |
+| Reducer | `const [state, dispatch] = useReducer(reducer, [])` |
 | Click | `<button onClick={handleClick}>` |
-| Add to list | `setRows([...rows, item])` |
+| Add to list | `setRows([...rows, item])` or `dispatch({ type: "add", item })` |
 | Remove | `setRows(rows.filter((r) => r.id !== id))` |
-| Input | `value={name} onChange={(e) => setName(e.target.value)}` |
+| Controlled input | `value={name} onChange={(e) => setName(e.target.value)}` |
+| Uncontrolled input | `<input ref={queryRef} defaultValue="" />` |
+| Label id | `const id = useId()` then `htmlFor={id}` |
 | Form | `onSubmit={handleSubmit}` + `preventDefault` |
+| Prop check | `Notice.propTypes = { title: PropTypes.string.isRequired }` |
+| HOC | `function withLoading(Wrapped) { return function View(props) { … } }` |
+| Render prop | `<List renderItem={(row) => <Notice title={row.title} />} />` |
 | Effect once | `useEffect(() => { ... }, [])` |
+| Before paint | `useLayoutEffect(() => { ... }, [])` |
 | Fetch | inner `async` + `ignore` cleanup |
+| Ref box | `const id = useRef(null)` then `id.current` |
+| Cache a value | `useMemo(() => filter(rows), [rows])` |
+| Cache a function | `useCallback((id) => { ... }, [])` |
+| Skip render | `memo(function Notice(props) { ... })` |
 | Route wrap | `BrowserRouter` in `main.jsx` |
 | Pages | `<Route path="students" element={<Students />} />` |
 | Nav | `<Link to="/students">` / `NavLink` |
 | Param | `const { id } = useParams()` |
+| Search | `searchParams.get("section")` |
 | After save | `navigate("/students")` |
 | Layout | parent `Route` + `<Outlet />` |
+| Guard | `<Protected isLoggedIn={...}><Students /></Protected>` |
+| Lazy page | `lazy(() => import("./pages/Students.jsx"))` inside `<Suspense>` |
 | Shared app data | `createContext` + `Provider` + `useContext` |
 | Reuse logic | `function useSomething() { ... }` |
+| Render error | class `ErrorBoundary` around the page |
+| Modal | `createPortal(jsx, document.body)` |
+| Ref to a child | `ref` prop (React 19) or `forwardRef` |
 | POST JSON | `fetch(url, { method: "POST", headers, body })` |
 
 ### Day 20 recap
 
-Context shares app-wide values (auth, theme) without prop drilling. Custom hooks share **logic**. `fetch` GET/POST JSON is how React talks to Node; Vite can proxy `/api` in dev. Keep list state on the page that owns it.
+Context shares app-wide values (auth, theme) without prop drilling. `withAuth` is the Day 16 HOC reading that context. Custom hooks share **logic**. An error boundary (class) catches a render crash. `createPortal` draws a modal on `document.body`. Pass `ref` into a child to focus its input.
 
-React across Days 15–20 is the **UI** of the MERN app: components, state, effects, routes. Node will be the `/api` you already call.
+`fetch` GET/POST JSON is how React talks to Node; Vite can proxy `/api` in dev. Keep list state on the page that owns it.
 
-Practice: `AuthProvider` with a fake login form (name only) and a banner that shows “Hi, Asha”. Extract `useStudents` from Day 18. Extra: `POST` a new user to `https://jsonplaceholder.typicode.com/users` and `console.log` the response (the demo API echoes it).
+React across Days 15–20 is the **UI** of the MERN app: both component styles, props and composition, state and reducers, effects and refs, routes, then shared data and the API. Node will be the `/api` you already call.
+
+Practice: `AuthProvider` with a fake login form (name only) and a banner that shows “Hi, Asha”. Extract `useStudents` from Day 18. Wrap the student page in `ErrorBoundary`. Confirm delete with a portal dialog. Extra: `POST` a new user to `https://jsonplaceholder.typicode.com/users` and `console.log` the response (the demo API echoes it).
 
 [Back to index](#index)
 
