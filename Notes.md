@@ -3612,6 +3612,7 @@ Practice: register form — prevent submit, show a status message, `localStorage
 
 **Topic:** Async JS and `fetch`  
 **Goal:** Students can explain a Promise, use `async`/`await`, `GET` JSON with `fetch`, and say how this talks to a Node API later.
+**Recording**: https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day 14.mp4
 
 The browser must **wait** for the network without freezing the page.
 
