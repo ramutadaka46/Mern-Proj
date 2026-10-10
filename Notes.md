@@ -4185,6 +4185,9 @@ Practice: scaffold `school-portal` with Vite. In `App.jsx`, render a heading, a 
 
 **Topic:** Props, lists, and component patterns  
 **Goal:** Students can pass data into components, render a list with a stable `key`, and share behavior with composition, a higher-order component, or a render prop.
+### Recordings
+**Part1**: https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day 16 part-1.mp4
+**part2**: https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day 16 part-2.mp4
 
 This is objects + `map` from [Day 11](#day-11), drawn on screen.
 
