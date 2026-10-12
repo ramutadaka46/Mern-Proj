@@ -3612,7 +3612,7 @@ Practice: register form — prevent submit, show a status message, `localStorage
 
 **Topic:** Async JS and `fetch`  
 **Goal:** Students can explain a Promise, use `async`/`await`, `GET` JSON with `fetch`, and say how this talks to a Node API later.
-**Recording**: https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day 14.mp4
+**Recording:** [Day 14 class recording](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%2014.mp4)
 
 The browser must **wait** for the network without freezing the page.
 
@@ -4186,8 +4186,10 @@ Practice: scaffold `school-portal` with Vite. In `App.jsx`, render a heading, a 
 **Topic:** Props, lists, and component patterns  
 **Goal:** Students can pass data into components, render a list with a stable `key`, and share behavior with composition, a higher-order component, or a render prop.
 ### Recordings
-**Part1**: https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day 16 part-1.mp4
-**part2**: https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day 16 part-2.mp4
+
+**Part 1:** [Day 16 part 1](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%2016%20part-1.mp4)
+
+**Part 2:** [Day 16 part 2](https://recordingscodesagara.blob.core.windows.net/recordings/bt1/day%2016%20part-2.mp4)
 
 This is objects + `map` from [Day 11](#day-11), drawn on screen.
 
