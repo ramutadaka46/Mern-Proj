@@ -28,6 +28,10 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
 | [Day 18](#day-18) | React effects | useEffect, fetch, useRef, useMemo, useCallback, memo |
 | [Day 19](#day-19) | React Router | SPA routes, params, layouts, protected and lazy routes |
 | [Day 20](#day-20) | React data flow | Context, custom hooks, error boundaries, portals, Node API |
+| [Day 21](#day-21) | SQL basics | Tables, types, CREATE, INSERT, SELECT, WHERE, ORDER BY |
+| [Day 22](#day-22) | SQL change and keys | UPDATE, DELETE, filters, constraints, primary and foreign keys |
+| [Day 23](#day-23) | SQL joins and groups | Joins, relationships, COUNT/SUM, GROUP BY, HAVING |
+| [Day 24](#day-24) | SQL design and Node | Subqueries, views, indexes, transactions, Node, vs Mongo |
 
 - [Day 1 — Tech overview](#day-1)
   - [HTML](#html)
@@ -204,6 +208,47 @@ Day-wise notes. Click a day in the index to jump there. Add a new `## Day N` hea
   - [How React connects to Node](#how-react-connects-to-node)
   - [React cheat sheet](#react-cheat-sheet)
   - [Day 20 recap](#day-20-recap)
+- [Day 21 — SQL basics](#day-21)
+  - [What SQL is](#what-sql-is)
+  - [SQL tables, rows, and columns](#sql-tables-rows-and-columns)
+  - [School tables](#school-tables)
+  - [SQL data types](#sql-data-types)
+  - [CREATE TABLE](#create-table)
+  - [INSERT](#insert)
+  - [SELECT](#select)
+  - [WHERE](#where)
+  - [ORDER BY and LIMIT](#order-by-and-limit)
+  - [NULL](#null)
+  - [Day 21 recap](#day-21-recap)
+- [Day 22 — SQL change and keys](#day-22)
+  - [UPDATE](#update)
+  - [DELETE](#delete)
+  - [AND, OR, LIKE, IN](#and-or-like-in)
+  - [DISTINCT and aliases](#distinct-and-aliases)
+  - [Constraints](#constraints)
+  - [Primary keys](#primary-keys)
+  - [Foreign keys](#foreign-keys)
+  - [Day 22 recap](#day-22-recap)
+- [Day 23 — SQL joins and groups](#day-23)
+  - [Why tables join](#why-tables-join)
+  - [INNER JOIN](#inner-join)
+  - [LEFT JOIN](#left-join)
+  - [Other joins](#other-joins)
+  - [Relationships](#relationships)
+  - [Aggregate functions](#aggregate-functions)
+  - [GROUP BY](#group-by)
+  - [HAVING](#having)
+  - [Day 23 recap](#day-23-recap)
+- [Day 24 — SQL design and Node](#day-24)
+  - [Subqueries](#subqueries)
+  - [Views](#views)
+  - [Indexes](#indexes)
+  - [Transactions](#transactions)
+  - [Simple table design](#simple-table-design)
+  - [SQL from Node](#sql-from-node)
+  - [SQL vs MongoDB](#sql-vs-mongodb)
+  - [SQL cheat sheet](#sql-cheat-sheet)
+  - [Day 24 recap](#day-24-recap)
 
 ---
 
@@ -304,7 +349,7 @@ Good when the shape of data changes often (flexible documents).
 
 ### SQL
 
-**Structured Query Language** — used with **relational** databases (MySQL, PostgreSQL, SQL Server). Data lives in **tables** with rows and columns, and tables can link to each other.
+**Structured Query Language** — used with **relational** databases (MySQL, PostgreSQL, SQL Server). Data lives in **tables** with rows and columns, and tables can link to each other. Full lessons are [Day 21](#day-21) through [Day 24](#day-24).
 
 ```sql
 SELECT name, class FROM students WHERE class = '10-A';
@@ -5976,9 +6021,810 @@ Context shares app-wide values (auth, theme) without prop drilling. `withAuth` i
 
 `fetch` GET/POST JSON is how React talks to Node; Vite can proxy `/api` in dev. Keep list state on the page that owns it.
 
-React across Days 15–20 is the **UI** of the MERN app: both component styles, props and composition, state and reducers, effects and refs, routes, then shared data and the API. Node will be the `/api` you already call.
+React across Days 15–20 is the **UI** of the MERN app: both component styles, props and composition, state and reducers, effects and refs, routes, then shared data and the API. SQL is next ([Days 21–24](#day-21)), then Node will be the `/api` you already call.
 
 Practice: `AuthProvider` with a fake login form (name only) and a banner that shows “Hi, Asha”. Extract `useStudents` from Day 18. Wrap the student page in `ErrorBoundary`. Confirm delete with a portal dialog. Extra: `POST` a new user to `https://jsonplaceholder.typicode.com/users` and `console.log` the response (the demo API echoes it).
+
+[Back to index](#index)
+
+---
+
+## Day 21
+
+**Topic:** SQL tables and SELECT  
+**Goal:** Students can picture a table, create one, put rows in, and read them back with `WHERE` and `ORDER BY`.
+
+SQL is the language. **MySQL** and **PostgreSQL** are two databases that speak it. The school examples below work in both, with one note: auto ids use `SERIAL` in Postgres and `AUTO_INCREMENT` in MySQL.
+
+### What SQL is
+
+A **relational** database stores data in **tables**. SQL is how you ask that database to create, read, change, and delete rows.
+
+```text
+React  →  Node API  →  SQL database (tables)
+```
+
+MongoDB stores a student as one document. SQL stores a student as one **row**, with a column for each field.
+
+### SQL tables, rows, and columns
+
+Think of a spreadsheet:
+
+| id | name | class | fees_paid |
+| --- | --- | --- | --- |
+| 1 | Asha | 10-A | true |
+| 2 | Ravi | 10-A | false |
+| 3 | Meera | 9-B | true |
+
+- **table** = the sheet (`students`)
+- **column** = a field (`name`)
+- **row** = one student
+- **cell** = one value (`Asha`)
+
+Every column has a **type**. You cannot put `"hello"` in a number column.
+
+### School tables
+
+Start with one table. Later days will add `marks` and `fees` and join them.
+
+```text
+students
+  id          unique number for each student
+  name        text
+  class_name  text like 10-A
+  fees_paid   true / false
+```
+
+Names: tables and columns in **snake_case**. One thing per table (`students`, not `school_everything`).
+
+### SQL data types
+
+| Type | Holds | Example |
+| --- | --- | --- |
+| `INTEGER` | Whole number | `101` |
+| `SERIAL` / `AUTO_INCREMENT` | Auto id | `1`, `2`, `3` |
+| `DECIMAL(10,2)` | Money | `1500.00` |
+| `VARCHAR(100)` | Short text | `'Asha'` |
+| `TEXT` | Long text | a notice |
+| `BOOLEAN` | true / false | `TRUE` |
+| `DATE` | Calendar day | `'2026-06-15'` |
+| `TIMESTAMP` | Date and time | `'2026-06-15 09:00:00'` |
+
+Text and dates go in **single quotes**. Numbers do not.
+
+```sql
+'Asha'     -- text
+10         -- number
+TRUE       -- boolean
+NULL       -- unknown / missing
+```
+
+### CREATE TABLE
+
+Make the table once.
+
+```sql
+CREATE TABLE students (
+  id         SERIAL PRIMARY KEY,
+  name       VARCHAR(100) NOT NULL,
+  class_name VARCHAR(20),
+  fees_paid  BOOLEAN DEFAULT FALSE
+);
+```
+
+MySQL version of the id column:
+
+```sql
+id INT PRIMARY KEY AUTO_INCREMENT
+```
+
+`PRIMARY KEY` = unique id for the row. `NOT NULL` = this column cannot be empty. `DEFAULT FALSE` = if you skip `fees_paid`, it is false.
+
+See the tables:
+
+```sql
+-- Postgres
+\dt
+
+-- MySQL
+SHOW TABLES;
+```
+
+See columns:
+
+```sql
+-- Postgres
+\d students
+
+-- MySQL
+DESCRIBE students;
+```
+
+### INSERT
+
+Add rows.
+
+```sql
+INSERT INTO students (name, class_name, fees_paid)
+VALUES ('Asha', '10-A', TRUE);
+
+INSERT INTO students (name, class_name, fees_paid)
+VALUES
+  ('Ravi',  '10-A', FALSE),
+  ('Meera', '9-B',  TRUE);
+```
+
+You can skip `id` when it is auto. List the columns, then matching values in the same order.
+
+### SELECT
+
+Read rows. `*` means all columns.
+
+```sql
+SELECT * FROM students;
+
+SELECT name, class_name FROM students;
+```
+
+The result is a table. `SELECT` does not change data.
+
+### WHERE
+
+Keep only matching rows.
+
+```sql
+SELECT name FROM students WHERE class_name = '10-A';
+
+SELECT name FROM students WHERE fees_paid = FALSE;
+
+SELECT * FROM students WHERE id = 2;
+```
+
+| Operator | Meaning |
+| --- | --- |
+| `=` | Equal |
+| `!=` or `<>` | Not equal |
+| `>` `<` `>=` `<=` | Compare numbers and dates |
+
+```sql
+SELECT * FROM students WHERE id > 1;
+```
+
+### ORDER BY and LIMIT
+
+Sort, then take a few.
+
+```sql
+SELECT name FROM students ORDER BY name;
+SELECT name FROM students ORDER BY name DESC;
+SELECT * FROM students ORDER BY id DESC LIMIT 2;
+```
+
+`ASC` is default (A→Z, small→big). `DESC` is reverse. `LIMIT 2` = first 2 after sorting.
+
+### NULL
+
+`NULL` is “we do not have this value”. It is not `0` and not `''`.
+
+```sql
+INSERT INTO students (name, class_name) VALUES ('Kiran', NULL);
+
+SELECT * FROM students WHERE class_name IS NULL;
+SELECT * FROM students WHERE class_name IS NOT NULL;
+```
+
+`WHERE class_name = NULL` is always false. Use `IS NULL`.
+
+### Day 21 recap
+
+A table is named columns plus rows. `CREATE TABLE` sets the shape. `INSERT` adds a row. `SELECT` reads. `WHERE` filters. `ORDER BY` / `LIMIT` sort and cap. `NULL` is missing.
+
+Practice: create `students`, insert Asha, Ravi, Meera, then:
+
+1. all names
+2. students in `10-A`
+3. names A→Z
+4. the latest two ids
+
+[Back to index](#index)
+
+---
+
+## Day 22
+
+**Topic:** Change rows and protect columns  
+**Goal:** Students can update and delete safely, write richer filters, and explain primary / foreign keys.
+
+### UPDATE
+
+Change existing rows. **Always use `WHERE`**, or every row changes.
+
+```sql
+UPDATE students
+SET fees_paid = TRUE
+WHERE name = 'Ravi';
+
+UPDATE students
+SET class_name = '10-B', fees_paid = TRUE
+WHERE id = 1;
+```
+
+Check with `SELECT` first:
+
+```sql
+SELECT * FROM students WHERE name = 'Ravi';
+```
+
+Then run the `UPDATE`. Then `SELECT` again.
+
+### DELETE
+
+Remove rows. Same rule: **`WHERE`**, or the table empties.
+
+```sql
+DELETE FROM students WHERE id = 3;
+
+-- wipe the table (keep the columns)
+DELETE FROM students;
+```
+
+Drop the table itself (structure gone):
+
+```sql
+DROP TABLE students;
+```
+
+`DELETE` = rows. `DROP TABLE` = the table. You cannot undo either unless you are inside a [transaction](#transactions).
+
+### AND, OR, LIKE, IN
+
+Combine conditions.
+
+```sql
+SELECT * FROM students
+WHERE class_name = '10-A' AND fees_paid = FALSE;
+
+SELECT * FROM students
+WHERE class_name = '10-A' OR class_name = '9-B';
+```
+
+`IN` is a short `OR` list:
+
+```sql
+SELECT * FROM students
+WHERE class_name IN ('10-A', '9-B');
+```
+
+Range:
+
+```sql
+SELECT * FROM students WHERE id BETWEEN 1 AND 2;
+```
+
+`LIKE` matches text. `%` = any characters. `_` = one character.
+
+```sql
+SELECT name FROM students WHERE name LIKE 'A%';     -- starts with A
+SELECT name FROM students WHERE name LIKE '%a';     -- ends with a
+SELECT name FROM students WHERE class_name LIKE '10-%';
+```
+
+| | Meaning |
+| --- | --- |
+| `AND` | Both true |
+| `OR` | At least one true |
+| `NOT` | Flip |
+| `IN (...)` | One of these |
+| `BETWEEN a AND b` | Inclusive range |
+| `LIKE` | Pattern |
+
+### DISTINCT and aliases
+
+Unique values only:
+
+```sql
+SELECT DISTINCT class_name FROM students;
+```
+
+Rename a column in the result (the table does not change):
+
+```sql
+SELECT name AS student, class_name AS section
+FROM students;
+```
+
+Table alias (useful on Day 23 joins):
+
+```sql
+SELECT s.name FROM students AS s;
+```
+
+### Constraints
+
+Rules the database enforces. A bad `INSERT` / `UPDATE` is rejected.
+
+| Constraint | Rule |
+| --- | --- |
+| `NOT NULL` | Column cannot be empty |
+| `UNIQUE` | No two rows share this value |
+| `DEFAULT` | Value if you omit the column |
+| `CHECK` | Extra test |
+| `PRIMARY KEY` | Unique id (also `NOT NULL`) |
+| `FOREIGN KEY` | Value must exist in another table |
+
+```sql
+CREATE TABLE students (
+  id         SERIAL PRIMARY KEY,
+  email      VARCHAR(100) UNIQUE,
+  name       VARCHAR(100) NOT NULL,
+  class_name VARCHAR(20) DEFAULT '10-A',
+  fees_paid  BOOLEAN DEFAULT FALSE,
+  age        INTEGER CHECK (age >= 5)
+);
+```
+
+Try a second student with the same `email` — the database errors. That is the point.
+
+### Primary keys
+
+One column (or a small set) that **identifies** the row. Use a number `id`, not `name` (names repeat).
+
+```sql
+id SERIAL PRIMARY KEY
+```
+
+- unique
+- never `NULL`
+- does not change after insert
+
+Other tables will point at this `id`.
+
+### Foreign keys
+
+A column that **points at** another table’s primary key. `marks.student_id` must be a real `students.id`.
+
+```sql
+CREATE TABLE marks (
+  id         SERIAL PRIMARY KEY,
+  student_id INTEGER NOT NULL REFERENCES students(id),
+  subject    VARCHAR(50) NOT NULL,
+  score      INTEGER CHECK (score BETWEEN 0 AND 100)
+);
+
+INSERT INTO marks (student_id, subject, score)
+VALUES (1, 'Maths', 82);
+```
+
+`REFERENCES students(id)` is the foreign key. Inserting `student_id = 999` fails if no student 999 exists.
+
+What happens if you delete Asha while she has marks? The database can:
+
+- **reject** the delete (default)
+- **cascade** (delete her marks too) — `ON DELETE CASCADE`
+
+```sql
+student_id INTEGER REFERENCES students(id) ON DELETE CASCADE
+```
+
+Start with reject. Cascade is a team decision.
+
+### Day 22 recap
+
+`UPDATE` / `DELETE` need `WHERE`. `AND` / `OR` / `LIKE` / `IN` filter. Constraints stop bad data. A **primary key** identifies a row. A **foreign key** points at another table’s key.
+
+Practice: mark Ravi’s fees paid. List unpaid `10-A` students. Create `marks` with a foreign key. Insert two scores for Asha. Try `student_id = 999` and read the error.
+
+[Back to index](#index)
+
+---
+
+## Day 23
+
+**Topic:** Join tables and summarize  
+**Goal:** Students can join `students` to `marks`, and use `GROUP BY` with `COUNT` / `AVG`.
+
+### Why tables join
+
+Do not copy `name` onto every marks row. Store the name once. Join when you need both.
+
+```text
+students.id  ←→  marks.student_id
+```
+
+```sql
+SELECT students.name, marks.subject, marks.score
+FROM students
+INNER JOIN marks ON marks.student_id = students.id;
+```
+
+| name | subject | score |
+| --- | --- | --- |
+| Asha | Maths | 82 |
+| Asha | Science | 90 |
+| Ravi | Maths | 40 |
+
+Each matching pair becomes one result row. Asha with two subjects appears twice.
+
+### INNER JOIN
+
+Only rows that match **on both sides**.
+
+```sql
+SELECT s.name, m.subject, m.score
+FROM students AS s
+INNER JOIN marks AS m ON m.student_id = s.id
+WHERE m.score < 40;
+```
+
+If Meera has no marks, she does not appear. That is INNER JOIN.
+
+`JOIN` without a word usually means `INNER JOIN`.
+
+### LEFT JOIN
+
+Keep **all** left-table rows. Missing right side becomes `NULL`.
+
+```sql
+SELECT s.name, m.subject, m.score
+FROM students AS s
+LEFT JOIN marks AS m ON m.student_id = s.id;
+```
+
+| name | subject | score |
+| --- | --- | --- |
+| Asha | Maths | 82 |
+| Ravi | Maths | 40 |
+| Meera | NULL | NULL |
+
+Students with no marks still show. Useful for “who has not written a test?”
+
+```sql
+SELECT s.name
+FROM students AS s
+LEFT JOIN marks AS m ON m.student_id = s.id
+WHERE m.id IS NULL;
+```
+
+### Other joins
+
+| Join | Keeps |
+| --- | --- |
+| `INNER JOIN` | Matches only |
+| `LEFT JOIN` | All left + matching right |
+| `RIGHT JOIN` | All right + matching left |
+| `FULL JOIN` | All from both (Postgres; MySQL needs a workaround) |
+
+`RIGHT JOIN` is `LEFT JOIN` with the tables swapped. Prefer `LEFT JOIN` so the “keep these” table is written first.
+
+`CROSS JOIN` every left row with every right row — almost never for school data.
+
+Stack result sets with the same columns:
+
+```sql
+SELECT name FROM students
+UNION
+SELECT name FROM teachers;
+```
+
+`UNION` drops duplicates. `UNION ALL` keeps them.
+
+### Relationships
+
+| Kind | Meaning | Example |
+| --- | --- | --- |
+| One-to-many | One parent, many children | One student, many marks |
+| Many-to-many | Needs a **link** table | Students ↔ extra clubs |
+| One-to-one | Rare | One student, one locker |
+
+Many-to-many (students in clubs):
+
+```sql
+CREATE TABLE clubs (
+  id   SERIAL PRIMARY KEY,
+  name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE student_clubs (
+  student_id INTEGER REFERENCES students(id),
+  club_id    INTEGER REFERENCES clubs(id),
+  PRIMARY KEY (student_id, club_id)
+);
+```
+
+`student_clubs` has two foreign keys and no extra “name” copy.
+
+### Aggregate functions
+
+One number from many rows.
+
+| Function | Result |
+| --- | --- |
+| `COUNT(*)` | How many rows |
+| `COUNT(column)` | How many non-NULL values |
+| `SUM(column)` | Total |
+| `AVG(column)` | Average |
+| `MIN(column)` / `MAX(column)` | Smallest / largest |
+
+```sql
+SELECT COUNT(*) FROM students;
+SELECT COUNT(*) FROM students WHERE fees_paid = FALSE;
+SELECT AVG(score) FROM marks;
+SELECT MAX(score) FROM marks WHERE subject = 'Maths';
+```
+
+### GROUP BY
+
+Aggregate **per group**, not the whole table.
+
+```sql
+SELECT class_name, COUNT(*) AS n
+FROM students
+GROUP BY class_name;
+```
+
+| class_name | n |
+| --- | --- |
+| 10-A | 2 |
+| 9-B | 1 |
+
+Average mark per student:
+
+```sql
+SELECT s.name, AVG(m.score) AS avg_score
+FROM students AS s
+INNER JOIN marks AS m ON m.student_id = s.id
+GROUP BY s.id, s.name;
+```
+
+Every selected column that is not an aggregate must appear in `GROUP BY`.
+
+### HAVING
+
+`WHERE` filters **rows** before grouping. `HAVING` filters **groups** after.
+
+```sql
+SELECT class_name, COUNT(*) AS n
+FROM students
+GROUP BY class_name
+HAVING COUNT(*) >= 2;
+```
+
+Failing subjects per student, only if they failed more than one:
+
+```sql
+SELECT s.name, COUNT(*) AS fails
+FROM students AS s
+INNER JOIN marks AS m ON m.student_id = s.id
+WHERE m.score < 40
+GROUP BY s.id, s.name
+HAVING COUNT(*) > 1;
+```
+
+Order in a query:
+
+```text
+FROM → JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT
+```
+
+You write `SELECT` first; the database follows that pipeline.
+
+### Day 23 recap
+
+`INNER JOIN` = matches. `LEFT JOIN` = all left rows, `NULL` if no match. Join on the foreign key. `COUNT` / `AVG` summarize. `GROUP BY` splits groups. `HAVING` filters those groups.
+
+Practice: list each student with each subject score. List students with no marks. Count students per class. Show average score per student, highest first.
+
+[Back to index](#index)
+
+---
+
+## Day 24
+
+**Topic:** Design, speed, and SQL from Node  
+**Goal:** Students can nest a SELECT, explain an index and a transaction, and run a query from Node.
+
+### Subqueries
+
+A `SELECT` inside another query.
+
+Ids of students who scored 90+:
+
+```sql
+SELECT name FROM students
+WHERE id IN (
+  SELECT student_id FROM marks WHERE score >= 90
+);
+```
+
+Average vs each score:
+
+```sql
+SELECT subject, score
+FROM marks
+WHERE score > (SELECT AVG(score) FROM marks);
+```
+
+A subquery in `FROM` is a throwaway table:
+
+```sql
+SELECT class_name, avg_score
+FROM (
+  SELECT s.class_name, AVG(m.score) AS avg_score
+  FROM students s
+  JOIN marks m ON m.student_id = s.id
+  GROUP BY s.class_name
+) AS class_avg
+WHERE avg_score >= 50;
+```
+
+If a join is clearer, use a join. Subqueries help for “is in this set” and for one overall number (`AVG` of the whole table).
+
+### Views
+
+A saved `SELECT` with a name. It does not copy the data.
+
+```sql
+CREATE VIEW unpaid_10a AS
+SELECT id, name
+FROM students
+WHERE class_name = '10-A' AND fees_paid = FALSE;
+
+SELECT * FROM unpaid_10a;
+```
+
+Change the view’s query with `CREATE OR REPLACE VIEW` (Postgres) or `CREATE OR REPLACE VIEW` in MySQL. Drop with `DROP VIEW unpaid_10a`.
+
+Use a view for a report you run often. Still put `WHERE` on it when you need a subset.
+
+### Indexes
+
+A lookup list the database keeps so it does not scan every row.
+
+```sql
+CREATE INDEX idx_students_class ON students (class_name);
+```
+
+Primary keys and `UNIQUE` columns already have an index.
+
+Helpful on columns you filter or join a lot (`student_id`, `class_name`, `email`). Not useful on a tiny table, and every `INSERT`/`UPDATE` must update the index — so do not index every column.
+
+```sql
+-- Postgres: see if a query uses the index
+EXPLAIN ANALYZE
+SELECT * FROM students WHERE class_name = '10-A';
+```
+
+### Transactions
+
+Several statements as **one**. All succeed, or all roll back.
+
+```sql
+BEGIN;
+
+UPDATE students SET fees_paid = TRUE WHERE id = 1;
+INSERT INTO fees (student_id, amount) VALUES (1, 1500);
+
+COMMIT;    -- save both
+-- ROLLBACK;  -- undo both
+```
+
+If the insert fails after the update, `ROLLBACK` (or a disconnected session) leaves fees still unpaid. Without a transaction, you could mark paid with no fee row.
+
+`COMMIT` = keep. `ROLLBACK` = undo since `BEGIN`.
+
+### Simple table design
+
+Store each fact **once**. That is enough “normalization” for this course.
+
+| Do | Don’t |
+| --- | --- |
+| `students` + `marks.student_id` | `student_name` copied on every marks row |
+| `DECIMAL` for money | `FLOAT` for fees |
+| `DATE` for a day | Text `'15 June'` |
+| Link table for clubs | A `clubs` text column with `'sports,music'` |
+
+A small school shape:
+
+```text
+students (id, name, class_name, email, fees_paid)
+marks    (id, student_id → students, subject, score)
+fees     (id, student_id → students, amount, paid_on)
+```
+
+Add columns with:
+
+```sql
+ALTER TABLE students ADD COLUMN phone VARCHAR(20);
+```
+
+### SQL from Node
+
+Postgres: `pg`. MySQL: `mysql2`. Same idea: connect, send a string, get rows.
+
+```js
+import pg from "pg";
+
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export async function listUnpaid() {
+  const result = await pool.query(
+    `SELECT id, name FROM students
+     WHERE fees_paid = FALSE
+     ORDER BY name`,
+  );
+  return result.rows;
+}
+
+export async function addStudent(name, className) {
+  const result = await pool.query(
+    `INSERT INTO students (name, class_name)
+     VALUES ($1, $2)
+     RETURNING id, name, class_name`,
+    [name, className],
+  );
+  return result.rows[0];
+}
+```
+
+`$1`, `$2` are **parameters**. Never glue user text into SQL:
+
+```js
+// bad — SQL injection
+await pool.query("SELECT * FROM students WHERE name = '" + name + "'");
+```
+
+MySQL uses `?` instead of `$1`. `RETURNING` is Postgres; MySQL uses `result.insertId`.
+
+React still `fetch`es `/api/students`. Node runs the SQL. The browser does not talk to Postgres directly.
+
+### SQL vs MongoDB
+
+| | SQL | MongoDB |
+| --- | --- | --- |
+| Shape | Tables, fixed columns | Documents, flexible |
+| Links | Foreign keys + joins | Embed or store an id |
+| Query | `SELECT ... JOIN` | `find`, `aggregate` |
+| Rules | Constraints | Schema optional |
+| Fits | Fees, marks, reports | Nested, changing shapes |
+
+Same school app can use SQL for fees and marks. MERN often uses MongoDB because documents look like JS objects. SQL is still the language of most company data.
+
+### SQL cheat sheet
+
+| Goal | SQL |
+| --- | --- |
+| Make a table | `CREATE TABLE students (id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL)` |
+| Add a row | `INSERT INTO students (name) VALUES ('Asha')` |
+| Read all | `SELECT * FROM students` |
+| Some columns | `SELECT name, class_name FROM students` |
+| Filter | `WHERE class_name = '10-A'` |
+| Text pattern | `WHERE name LIKE 'A%'` |
+| List | `WHERE id IN (1, 2)` |
+| Sort | `ORDER BY name DESC` |
+| Cap | `LIMIT 10` |
+| Missing | `WHERE class_name IS NULL` |
+| Unique values | `SELECT DISTINCT class_name FROM students` |
+| Change | `UPDATE students SET fees_paid = TRUE WHERE id = 1` |
+| Remove rows | `DELETE FROM students WHERE id = 1` |
+| Remove table | `DROP TABLE students` |
+| Join matches | `INNER JOIN marks ON marks.student_id = students.id` |
+| Keep left | `LEFT JOIN marks ON marks.student_id = students.id` |
+| Count | `SELECT COUNT(*) FROM students` |
+| Per group | `GROUP BY class_name` |
+| Filter groups | `HAVING COUNT(*) >= 2` |
+| Nested SELECT | `WHERE id IN (SELECT student_id FROM marks)` |
+| Saved query | `CREATE VIEW unpaid AS SELECT ...` |
+| Speed lookup | `CREATE INDEX idx_students_class ON students (class_name)` |
+| All or nothing | `BEGIN;` … `COMMIT;` or `ROLLBACK;` |
+| Node (pg) | `pool.query('SELECT ... WHERE id = $1', [id])` |
+
+### Day 24 recap
+
+A subquery is a SELECT inside a SELECT. A view is a named query. An index speeds `WHERE` / `JOIN`. A transaction commits or rolls back as a unit. Node sends SQL with **parameters**, never string glue. SQL tables vs Mongo documents is a data-shape choice.
+
+Practice: view of unpaid students. Index on `marks.student_id`. Transaction: set `fees_paid` and insert a `fees` row together. Node: `listUnpaid()` using `$1` or `?`. Extra: rewrite the “score >= 90” subquery as a join.
 
 [Back to index](#index)
 
